@@ -13,13 +13,7 @@ public class playerMovement : MonoBehaviour {
 	void Start () {
         Rigidbody rigidbody = GetComponent<Rigidbody>();    //get the physics of the object
         rigidbody.freezeRotation = true;    //stop the object from rotating
-    }
-    
-	// Update is called before rendering a frame
-	void Update () {
-        //transform.Translate(Vector3.forward * Input.GetAxis("Vertical") * Time.deltaTime);
-    }
-    
+    }   
 
     private void FixedUpdate()
     {
@@ -33,10 +27,13 @@ public class playerMovement : MonoBehaviour {
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.name == "wall")
+        if (collision.gameObject.name == "Walls")
         {
-            Destroy(collision.gameObject);  //for testing, destroy the wall
+            //restart the game
         }
+
+        //if collision == "obstacles"
+            //restart the game
     }
     
 }
