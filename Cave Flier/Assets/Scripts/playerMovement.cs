@@ -65,7 +65,7 @@ public class playerMovement : MonoBehaviour
         */
 
         //Accelerometer Input
-        transform.Translate(Input.acceleration.x, Input.acceleration.z * 0.1f,  Time.deltaTime * speed);
+        transform.Translate(Input.acceleration.x, Input.acceleration.z * 0.5f,  Time.deltaTime * speed);
     }
 
     /**

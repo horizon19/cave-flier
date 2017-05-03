@@ -17,7 +17,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class obstaclesSetup : MonoBehaviour {
+public class obstaclesSetup : MonoBehaviour
+{
     
     /**
     * Date:             May 2, 2017
@@ -26,7 +27,8 @@ public class obstaclesSetup : MonoBehaviour {
     * Description:
     *                   Initializes the obstacles when the objects is created.
     */
-    void Start () {
+    void Start ()
+    {
         //change the color of every obstacle in the level
         foreach (Renderer r in GetComponentsInChildren<Renderer>())
         {
