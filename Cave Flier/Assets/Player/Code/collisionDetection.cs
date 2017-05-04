@@ -2,19 +2,19 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class collisionDetection : MonoBehaviour 
+public class collisionDetection : MonoBehaviour
 {
 
-	// Use this for initialization
-    void Start ()
+    // Use this for initialization
+    void Start()
     {
-		
-	}
-	
-	// Update is called once per frame
-    void Update ()
+
+    }
+
+    // Update is called once per frame
+    void Update()
     {
-		
+
     }
 
     /**
@@ -29,7 +29,7 @@ public class collisionDetection : MonoBehaviour
     {
         GameObject go = other.gameObject;//the object we've encountered
 
-        Debug.Log("Hit " + go.name + " at " + go.transform.position + "; distance: " + Vector3.Distance(this.transform.position, go.transform.position) + 
+        Debug.Log("Hit " + go.name + " at " + go.transform.position + "; distance: " + Vector3.Distance(this.transform.position, go.transform.position) +
             " angle: " + Vector3.Angle(this.transform.forward, go.transform.position));
     }
 }
