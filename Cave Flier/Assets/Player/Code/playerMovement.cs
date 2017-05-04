@@ -76,12 +76,13 @@ public class playerMovement : MonoBehaviour
     *                   Updates the object when it comes into contact with another object.
     *                   
     * Revision:         Aing Ragunathan (May 2, 2017) - Updated to work with parent objects.  
+    *                   Jay Coughlan (May 3, 2017) - Updated if statement to reflect changed names
     */
     void OnCollisionEnter(Collision collision)
     {
         //Reset the level when a collision is detected with a wall or obstacle
         //test placement is the prefab containing our cubes in the test positions
-        if (collision.gameObject.name == "Walls" || collision.gameObject.name == "Obstacles" || 
+        if (collision.gameObject.name == "TestWalls" || collision.gameObject.name == "Obstacles" || 
             collision.gameObject.name == "TestPlacement")
         {
             transform.position = new Vector3(0, 0, 0);
