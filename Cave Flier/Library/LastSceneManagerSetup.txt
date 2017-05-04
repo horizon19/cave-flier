@@ -1,4 +1,4 @@
 sceneSetups:
-- path: Assets/Scenes/Aing/test1.unity
+- path: Assets/Scenes/Jay/TestCollider.unity
   isLoaded: 1
   isActive: 1
