@@ -2,19 +2,20 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class collisionDetection : MonoBehaviour {
+public class collisionDetection : MonoBehaviour 
+{
 
 	// Use this for initialization
-	void Start ()
+    void Start ()
     {
 		
 	}
 	
 	// Update is called once per frame
-	void Update ()
+    void Update ()
     {
 		
-	}
+    }
 
     /**
     * Date:             May 3, 2017
