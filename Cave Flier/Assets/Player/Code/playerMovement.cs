@@ -9,6 +9,8 @@
 --                  void OnCollisionEnter(Collision collision)
 --                  void calibrateAccelerometer()
 --                  Vector3 getAccelerometer(Vector3 accelerator)
+--                  void setPlayerState(PlayerState newState)
+--                  PlayerState getPlayerState()
 --                
 --  DATE:           April 28, 2017
 --
@@ -27,10 +29,24 @@ using UnityEngine;
 using System;
 using System.Globalization;
 
+/**
+* Date:             May 11, 2017
+* Author:           Jay Coughlan
+* Description:
+*                   These represent the Player's available states.
+*/
+public enum PlayerState
+{
+    pause,
+    active,
+    victory,
+    dead
+}
 
 public class playerMovement : MonoBehaviour
 {
     public float speed = 3; //standard speed forward movement
+    public PlayerState pState = PlayerState.active;
     private Matrix4x4 calibrationMatrix;
     private Vector3 wantedDeadZone = Vector3.zero;
 
@@ -43,12 +59,30 @@ public class playerMovement : MonoBehaviour
     *                   
     * Revision:         Aing Ragunathan (May 3, 2017) - Updated to calibrate accelerometer.                    
     */
-    private void Start ()
+    private void Start()
     {
         Rigidbody rigidbody = GetComponent<Rigidbody>();    //get the physics of the object
         rigidbody.freezeRotation = true;    //stop the object from rotating
 
         calibrateAccelerometer();   //calibrate the accelerometer to prevent drifiting
+    }
+
+    public void Update()
+    {
+        //this switch statement determines the actions the player will take during the update function
+        switch (pState)
+        {
+            case PlayerState.active:
+                //Accelerometer Input
+                transform.Translate(Input.acceleration.x, Input.acceleration.z * 0.5f, Time.deltaTime * speed);
+                break;
+            case PlayerState.dead:
+                break;
+            case PlayerState.pause:
+                break;
+            case PlayerState.victory:
+                break;
+        }
     }
 
     /**
@@ -71,8 +105,20 @@ public class playerMovement : MonoBehaviour
         transform.Translate(playerInput);
         */
 
-        //Accelerometer Input
-        transform.Translate(Input.acceleration.x, Input.acceleration.z * 0.5f,  Time.deltaTime * speed);
+        //this switch statement determines the actions the player will take during the update function
+        switch (pState)
+        {
+            case PlayerState.active:
+                //Accelerometer Input
+                transform.Translate(Input.acceleration.x, Input.acceleration.z * 0.5f, Time.deltaTime * speed);
+                break;
+            case PlayerState.dead:
+                break;
+            case PlayerState.pause:
+                break;
+            case PlayerState.victory:
+                break;
+        }
     }
 
     /**
@@ -90,14 +136,51 @@ public class playerMovement : MonoBehaviour
     {
         //Reset the level when a collision is detected with a wall or obstacle
         //test placement is the prefab containing our cubes in the test positions
-        if (collision.gameObject.name == "TestWalls" || collision.gameObject.name == "Obstacles" || 
+        if (collision.gameObject.name == "TestWalls" || collision.gameObject.name == "Obstacles" ||
             collision.gameObject.name == "TestPlacement")
         {
             transform.position = new Vector3(0, 0, 0);
             calibrateAccelerometer(); //re-calibrate accelerometer after death to prevent drifiting
         }
+    }
 
-        
+    /**
+    * Date:             May 10, 2017
+    * Author:           Jay Coughlan
+    * Interface:        void setPlayerState(PlayerState)
+    * Description:
+    *                   Changes the player state and runs one time functions that come with the new state.
+    */
+    public void setPlayerState(PlayerState state)
+    {
+        //we determine which state we're switching to, and call any one-time functions that need to happen when that state is switched.
+
+        switch (state)
+        {
+            case PlayerState.pause:
+                break;
+            case PlayerState.active:
+                break;
+            case PlayerState.dead:
+                break;
+            case PlayerState.victory:
+                break;
+        }
+
+        //now that that is run, we switch states
+        pState = state;
+    }
+
+    /**
+    * Date:             May 10, 2017
+    * Author:           Jay Coughlan
+    * Interface:        PlayerState getPlayerState()
+    * Description:
+    *                   returns the current player state
+    */
+    public PlayerState getPlayerState()
+    {
+        return pState;
     }
 
     /**
@@ -127,9 +210,5 @@ public class playerMovement : MonoBehaviour
         Vector3 accel = this.calibrationMatrix.MultiplyVector(accelerator);
         return accel;
     }
-
-    
-
-
 }
     
