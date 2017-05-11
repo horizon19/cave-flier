@@ -17,6 +17,7 @@ public class collisionDetection : MonoBehaviour
      * These are the private variables still visible in the editor
      */
     [SerializeField] private List<GameObject> collidedObjects = new List<GameObject>();
+    [SerializeField] private List<string> collidedNames = new List<string>();
 
     /**
      * These are ther private variables you cannot see
@@ -25,7 +26,7 @@ public class collisionDetection : MonoBehaviour
     private Color tmp = Color.black;
     private Vector3 thisPosition;
     private Renderer maxRend, lay3Rend, lay2Rend, minRend;
-    [SerializeField]private List<float> collidedMinDistances = new List<float>();
+    private List<float> collidedMinDistances = new List<float>();
 
     // Use this for initialization
     void Start()
@@ -64,9 +65,9 @@ public class collisionDetection : MonoBehaviour
         thisPosition = this.transform.position;
 
         //we are going to clamp the values of the layers now to make sure they fit appropriately within each other
-        Mathf.Clamp(min, 0, layer2 - 0.01f);
-        Mathf.Clamp(layer2, min + 0.01f, layer3 - 0.01f);
-        Mathf.Clamp(layer3, layer2 + 0.01f, max - 0.01f);
+        min = Mathf.Clamp(min, 0, layer2 - 0.01f);
+        layer2 = Mathf.Clamp(layer2, min + 0.01f, layer3 - 0.01f);
+        layer3 = Mathf.Clamp(layer3, layer2 + 0.01f, max - 0.01f);
         max = Mathf.Max(layer2 + 0.01f, max);
 
         //for each object we're currently colliding with, we want to check how far away the object is.
@@ -76,9 +77,15 @@ public class collisionDetection : MonoBehaviour
             //first we grab the distance between us and the colliding object
             distance = Vector3.Distance(this.transform.position, collidedObjects[index].transform.position);
 
-            collidedMinDistances[index] = distance;
+            //this is the minimum distance, and will be used to determine the result on OnTriggerExit()
+            if (distance < collidedMinDistances[index])
+            {
+                collidedMinDistances[index] = distance;
+            }
 
             //we catch the distance between layers and act accordingly
+            //with the exception of death, you likely won't want to put much code in this logic, because it will ocurr on every update
+            //for most logic you want to put it into the "OnTriggerExit()" method, so it occurs once.
             //if the object is within the minimum bounds.
             if(distance < min)
             {
@@ -155,19 +162,25 @@ public class collisionDetection : MonoBehaviour
     */
     private void OnTriggerEnter(Collider other)
     {
-        GameObject go = other.gameObject;//the object we've encountered
-        if (debug)
+        //we don't want to react if the collided object is the player.
+        if (other.gameObject.tag != "Player")
         {
-            Debug.Log("Hit " + go.name + " at " + go.transform.position + "; distance: " + Vector3.Distance(this.transform.position, go.transform.position) +
-            " angle: " + Vector3.Angle(this.transform.forward, go.transform.position));
-        }
+            GameObject go = other.gameObject;//the object we've encountered
+            if (debug)
+            {
+                Debug.Log("Hit " + go.name + " at " + go.transform.position + "; distance: " + Vector3.Distance(this.transform.position, go.transform.position) +
+                " angle: " + Vector3.Angle(this.transform.forward, go.transform.position));
+            }
 
-        //now we add the GO to the list
-        if (!collidedObjects.Contains(go)) //we make sure we're not somehow adding a duplicate object to the list.
-        {
-            collidedObjects.Add(go);
-            //we're adding it's distance here, and then referencing the object's index in it's own list to remove these distances later.
-            collidedMinDistances.Add(Vector3.Distance(this.transform.position, go.transform.position));
+            //now we add the GO to the list
+            if (!collidedObjects.Contains(go)) //we make sure we're not somehow adding a duplicate object to the list.
+            {
+                collidedObjects.Add(go);
+                //we're adding it's distance here, and then referencing the object's index in it's own list to remove these distances later.
+                collidedMinDistances.Add(Vector3.Distance(this.transform.position, go.transform.position));
+                //for testing, we're adding the object's name
+                collidedNames.Add(go.name);
+            }
         }
     }
 
@@ -192,8 +205,32 @@ public class collisionDetection : MonoBehaviour
         {
             //first get the objects index
             index = collidedObjects.IndexOf(go);
+
+            //here we decide what we want to do when the object leaves the area
+            if (collidedMinDistances[index] < min)
+            {
+                //within the bounds of our innermost layer. Likely we should not hit this either, as a death should be dealt with in the update loop
+            }
+            else if (collidedMinDistances[index] > min && collidedMinDistances[index] < layer2)
+            {
+                //second most inner layer, many many points
+            }
+            else if (collidedMinDistances[index] > layer2 && collidedMinDistances[index] < layer3)
+            {
+                //third most inner layer, some points maybe?
+            }
+            else if (collidedMinDistances[index] > layer3 && collidedMinDistances[index] < max)
+            {
+                //if it is within the bounds of our outer layer
+            }
+            else
+            {
+                //this statement is here just in case, but should never be encountered since the distance would have to be larger than the collider
+            }
+
             //now we remove it's distance
             collidedMinDistances.RemoveAt(index);
+            collidedNames.RemoveAt(index);
             //now we remove the object from the list
             collidedObjects.Remove(go);
         }
