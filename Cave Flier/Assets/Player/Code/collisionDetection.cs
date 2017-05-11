@@ -42,7 +42,7 @@ public class collisionDetection : MonoBehaviour
         minRend = minimumSphere.GetComponent<Renderer>();
 
         //we turn off the collider rendering during gameplay if we're not debugging
-        if(!debug)
+        if (!debug)
         {
             maxRend.enabled = false;
             lay3Rend.enabled = false;
@@ -72,7 +72,7 @@ public class collisionDetection : MonoBehaviour
 
         //for each object we're currently colliding with, we want to check how far away the object is.
         //Depending on what threshold it falls into, we want to do specific defined behaviour 
-        for(int index = 0; index < collidedObjects.Count; index++)
+        for (int index = 0; index < collidedObjects.Count; index++)
         {
             //first we grab the distance between us and the colliding object
             distance = Vector3.Distance(this.transform.position, collidedObjects[index].transform.position);
@@ -87,17 +87,17 @@ public class collisionDetection : MonoBehaviour
             //with the exception of death, you likely won't want to put much code in this logic, because it will ocurr on every update
             //for most logic you want to put it into the "OnTriggerExit()" method, so it occurs once.
             //if the object is within the minimum bounds.
-            if(distance < min)
+            if (distance < min)
             {
                 //likely death state will be acitvated here
 
-                if(debug)
+                if (debug)
                 {
                     Debug.DrawLine(thisPosition, collidedObjects[index].transform.position, colors[0]);
                 }
             }
             //if the object is within layer 2
-            else if(distance < layer2)
+            else if (distance < layer2)
             {
                 //probably max pointage
                 if (debug)
@@ -106,7 +106,7 @@ public class collisionDetection : MonoBehaviour
                 }
             }
             //if the object is within layer 3
-            else if(distance < layer3)
+            else if (distance < layer3)
             {
                 //minor pointage goes here
 
@@ -116,7 +116,7 @@ public class collisionDetection : MonoBehaviour
                 }
             }
             //if the object is within the maximum bounds
-            else if(distance < max)
+            else if (distance < max)
             {
                 //likely nothing happens here
                 if (debug)
@@ -130,14 +130,14 @@ public class collisionDetection : MonoBehaviour
         //we run this code again in update in case the user wants to check debugging mid run time
         //we check if maxRend is enabled, if it is we assume they're all enabled. if it's not we assume everything else is disabled as well.
         //no point in running disabling code on disabled functions
-        if (!debug && maxRend.enabled == true) 
+        if (!debug && maxRend.enabled == true)
         {
             maxRend.enabled = false;
             lay3Rend.enabled = false;
             lay2Rend.enabled = false;
             minRend.enabled = false;
         }
-        else if(debug && maxRend.enabled == false)//Same as above, but in reverse.
+        else if (debug && maxRend.enabled == false)//Same as above, but in reverse.
         {
             maxRend.enabled = true;
             lay3Rend.enabled = true;
@@ -201,7 +201,7 @@ public class collisionDetection : MonoBehaviour
             Debug.Log("Removing " + go.name + " at " + go.transform.position + "; distance: " + Vector3.Distance(this.transform.position, go.transform.position));
         }
 
-        if(collidedObjects.Contains(go))//we want to make sure this object wasn't, by some miracle, removed from the list prematurely
+        if (collidedObjects.Contains(go))//we want to make sure this object wasn't, by some miracle, removed from the list prematurely
         {
             //first get the objects index
             index = collidedObjects.IndexOf(go);
