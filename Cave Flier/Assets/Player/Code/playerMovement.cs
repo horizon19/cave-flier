@@ -9,6 +9,8 @@
 --                  void OnCollisionEnter(Collision collision)
 --                  void calibrateAccelerometer()
 --                  Vector3 getAccelerometer(Vector3 accelerator)
+--                  void setPlayerState(PlayerState newState)
+--                  PlayerState getPlayerState()
 --                
 --  DATE:           April 28, 2017
 --
@@ -27,7 +29,12 @@ using UnityEngine;
 using System;
 using System.Globalization;
 
-
+/**
+* Date:             May 11, 2017
+* Author:           Jay Coughlan
+* Description:
+*                   These represent the Player's available states.
+*/
 public enum PlayerState
 {
     pause,
@@ -39,12 +46,9 @@ public enum PlayerState
 public class playerMovement : MonoBehaviour
 {
     public float speed = 3; //standard speed forward movement
-<<<<<<< HEAD
     public PlayerState pState = PlayerState.active;
-=======
     private Matrix4x4 calibrationMatrix;
     private Vector3 wantedDeadZone = Vector3.zero;
->>>>>>> develop
 
     /**
     * Date:             April 28, 2017
@@ -120,7 +124,6 @@ public class playerMovement : MonoBehaviour
             transform.position = new Vector3(0, 0, 0);
             calibrateAccelerometer(); //re-calibrate accelerometer after death to prevent drifiting
         }
-<<<<<<< HEAD
     }
 
     /**
@@ -161,10 +164,6 @@ public class playerMovement : MonoBehaviour
     {
         return pState;
     }
-=======
-
-        
-    }
 
     /**
     * Date:             May 4, 2017
@@ -193,10 +192,5 @@ public class playerMovement : MonoBehaviour
         Vector3 accel = this.calibrationMatrix.MultiplyVector(accelerator);
         return accel;
     }
-
-    
-
-
->>>>>>> develop
 }
     
