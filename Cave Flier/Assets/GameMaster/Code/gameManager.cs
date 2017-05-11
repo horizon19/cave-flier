@@ -41,13 +41,25 @@ public class gameManager : MonoBehaviour
 
     public GameState gState = GameState.running;
 
-    // Use this for initialization
+    /**
+    * Date:             May 11, 2017
+    * Author:           Jay Coughlan
+    * Interface:        void Start()
+    * Description:
+    *                   Initializes Game Behavior                
+    */
     void Start()
     {
 
     }
 
-    // Update is called once per frame
+    /**
+    * Date:             May 11, 2017
+    * Author:           Jay Coughlan
+    * Interface:        void Update()
+    * Description:
+    *                   runs game behavior logic                   
+    */
     void Update()
     {
         //this is the behavior we want the game to run every Update depending on it's state.

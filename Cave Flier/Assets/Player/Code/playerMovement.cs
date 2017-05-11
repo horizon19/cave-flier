@@ -67,6 +67,24 @@ public class playerMovement : MonoBehaviour
         calibrateAccelerometer();   //calibrate the accelerometer to prevent drifiting
     }
 
+    public void Update()
+    {
+        //this switch statement determines the actions the player will take during the update function
+        switch (pState)
+        {
+            case PlayerState.active:
+                //Accelerometer Input
+                transform.Translate(Input.acceleration.x, Input.acceleration.z * 0.5f, Time.deltaTime * speed);
+                break;
+            case PlayerState.dead:
+                break;
+            case PlayerState.pause:
+                break;
+            case PlayerState.victory:
+                break;
+        }
+    }
+
     /**
     * Date:             April 28, 2017
     * Author:           Aing Ragunathan
