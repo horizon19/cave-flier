@@ -7,6 +7,8 @@
 --                  void Start ()
 --                  private void FixedUpdate()
 --                  void OnCollisionEnter(Collision collision)
+--                  void calibrateAccelerometer()
+--                  Vector3 getAccelerometer(Vector3 accelerator)
 --                
 --  DATE:           April 28, 2017
 --
@@ -37,7 +39,12 @@ public enum PlayerState
 public class playerMovement : MonoBehaviour
 {
     public float speed = 3; //standard speed forward movement
+<<<<<<< HEAD
     public PlayerState pState = PlayerState.active;
+=======
+    private Matrix4x4 calibrationMatrix;
+    private Vector3 wantedDeadZone = Vector3.zero;
+>>>>>>> develop
 
     /**
     * Date:             April 28, 2017
@@ -45,11 +52,15 @@ public class playerMovement : MonoBehaviour
     * Interface:        void Start ()
     * Description:
     *                   Initializes the player when the object is created.
+    *                   
+    * Revision:         Aing Ragunathan (May 3, 2017) - Updated to calibrate accelerometer.                    
     */
     private void Start()
     {
         Rigidbody rigidbody = GetComponent<Rigidbody>();    //get the physics of the object
         rigidbody.freezeRotation = true;    //stop the object from rotating
+
+        calibrateAccelerometer();   //calibrate the accelerometer to prevent drifiting
     }
 
     /**
@@ -61,7 +72,6 @@ public class playerMovement : MonoBehaviour
     *                   
     * Revisions:        Aing Ragunathan (May 2, 2017) - Updated to work with accelerometer
     */
-
     private void FixedUpdate()
     {
         /* Keyboard input
@@ -98,6 +108,7 @@ public class playerMovement : MonoBehaviour
     *                   
     * Revision:         Aing Ragunathan (May 2, 2017) - Updated to work with parent objects.  
     *                   Jay Coughlan (May 3, 2017) - Updated if statement to reflect changed names
+    *                   Aing Ragunathan (May 3, 2017) - Updated to calibrate accelerometer.                    
     */
     void OnCollisionEnter(Collision collision)
     {
@@ -107,7 +118,9 @@ public class playerMovement : MonoBehaviour
             collision.gameObject.name == "TestPlacement")
         {
             transform.position = new Vector3(0, 0, 0);
+            calibrateAccelerometer(); //re-calibrate accelerometer after death to prevent drifiting
         }
+<<<<<<< HEAD
     }
 
     /**
@@ -148,4 +161,42 @@ public class playerMovement : MonoBehaviour
     {
         return pState;
     }
+=======
+
+        
+    }
+
+    /**
+    * Date:             May 4, 2017
+    * Author:           Aing Ragunathan
+    * Interface:        void calibrateAccelerometer ()
+    * Description:
+    *                   Method for calibrating the accelerometer                
+    */
+    void calibrateAccelerometer()
+    {
+        wantedDeadZone = Input.acceleration;
+        Quaternion rotateQuaternion = Quaternion.FromToRotation(new Vector3(0f, 0f, -1f), wantedDeadZone);  //Get the rotation difference between a downward angle and current angle 
+        Matrix4x4 matrix = Matrix4x4.TRS(Vector3.zero, rotateQuaternion, new Vector3(1f, 1f, 1f)); //Setup matrix with rotation to match up with down vector
+        calibrationMatrix = matrix.inverse; //Get the inverse of the matrix to reverse the offset 
+    }
+
+    /**
+    * Date:             May 4, 2017
+    * Author:           Aing Ragunathan
+    * Interface:        void getAccelerometer ()
+    * Description:
+    *                   Gets the calibrated input using the real input
+    */
+    Vector3 getAccelerometer(Vector3 accelerator)
+    {
+        Vector3 accel = this.calibrationMatrix.MultiplyVector(accelerator);
+        return accel;
+    }
+
+    
+
+
+>>>>>>> develop
 }
+    
