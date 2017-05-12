@@ -8,6 +8,8 @@
  * Description:
  **********************************************/
 
+
+using System.Collections.Generic;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -32,6 +34,12 @@ public class ObstacleLoader : MonoBehaviour
 	// constant value for the max number of sections within tunnel
 	private const int MAXSEC = 10;
 
+	private const int NUMOFOBSTACLES = 50;
+	private const int OBSTACLES = 3;
+	private const int STALAGTITE = 0;
+	private const int STALAGMITE = 1;
+	private const int COLUMN = 2;
+
 	// obstacle object
 	private GameObject cube;
 	private GameObject wall;
@@ -46,6 +54,70 @@ public class ObstacleLoader : MonoBehaviour
 	private int xCoor;
 	private int yCoor;
 	private int zCoor;
+
+	private List<GameObject> obstacles = new List<GameObject>();
+
+
+	private void generateObstacles ()
+	{
+		int obstacleChooser;
+
+		for (int i = 0; i < NUMOFOBSTACLES; i++)
+		{
+			obstacleChooser = Random.Range (0, OBSTACLES);
+			switch (obstacleChooser)
+			{
+				case STALAGTITE:
+					cube = GameObject.CreatePrimitive (PrimitiveType.Cube);
+					cube.GetComponent<Renderer> ().material.color = Color.red;
+					obstacles.Add (cube);
+					break;
+
+				case STALAGMITE:
+					cube = GameObject.CreatePrimitive (PrimitiveType.Cube);
+					cube.GetComponent<Renderer>().material.color = Color.blue;
+					obstacles.Add (cube);
+					break; 	
+
+				case COLUMN:
+					cube = GameObject.CreatePrimitive (PrimitiveType.Cube);
+					cube.GetComponent<Renderer>().material.color = Color.green;
+					obstacles.Add (cube);
+					break;
+			}
+		}
+	}
+
+	private void setObstacleSize(GameObject obstacle)
+	{
+		if (obstacle.GetComponent<Renderer> ().material.color == Color.red)
+		{
+			obstacle.transform.localScale = new Vector3 (1,7, 1);
+		} else if (obstacle.GetComponent<Renderer> ().material.color == Color.blue)
+		{
+			obstacle.transform.localScale = new Vector3 (1,6, 1);
+		} else
+		{
+			obstacle.transform.localScale = new Vector3 (1,11, 1);
+
+		}
+	}
+
+
+
+	private void setYCoord(GameObject obstacle)
+	{
+		if (obstacle.GetComponent<Renderer> ().material.color == Color.red)
+		{
+			yCoor = TOPWALL + 1;
+		} else if (obstacle.GetComponent<Renderer> ().material.color == Color.blue)
+		{
+			yCoor = BOTTOMWALL;
+		} else
+		{
+			yCoor = 0;
+		}
+	}
 
 	/*********************************************************
 	 * Function: void Start()
@@ -64,7 +136,8 @@ public class ObstacleLoader : MonoBehaviour
 		xCoor = 0;
 		yCoor = 0;
 		zCoor = 0;
-		spawnObstacles();
+		generateObstacles ();
+		spawnObstacles ();
 	}
 
 	/*********************************************************
@@ -90,6 +163,8 @@ public class ObstacleLoader : MonoBehaviour
 	 *********************************************************/
 	private void spawnObstacles()
 	{
+		int obstaclePos = 0;
+
 		// loop through level section by section
 		while (currSection < MAXSEC)
 		{	// loop to place 5 obstacles per section
@@ -105,15 +180,14 @@ public class ObstacleLoader : MonoBehaviour
 
 				// create random values for x and y coordinates
 				xCoor = Random.Range (LEFTWALL, RIGHTWALL);
-				yCoor = Random.Range (TOPWALL, BOTTOMWALL);
+				setYCoord (obstacles[obstaclePos]);
+				setObstacleSize (obstacles [obstaclePos]);
 
-				// create cube object
-				cube = GameObject.CreatePrimitive (PrimitiveType.Cube);
 
 				// position the cube
-				cube.transform.position = new Vector3 (xCoor, yCoor, zCoor);
+				obstacles[obstaclePos].transform.position = new Vector3 (xCoor, yCoor, zCoor);
 
-				cube.transform.localScale = new Vector3 (2, 2, 2);
+				obstaclePos++;
 			}
 
 			secOffSet += SECSIZE; // go to next section
