@@ -39,16 +39,35 @@ public enum PlayerState
 {
     pause,
     active,
+    damaged,
     victory,
     dead
 }
 
 public class playerMovement : MonoBehaviour
 {
-    public float speed = 3; //standard speed forward movement
+    public float speedMin = 10; //standard speed forward movement
+    public float speedMax = 17;
+    private float levelDistance;
+    private float startTime;
+    public float currentSpeed;
+    private Vector3 start;
+    private Vector3 end;
+    private float levelCompleted;
+    private bool speedDelay = false;
+    public int startHealth = 3;
+
+    public float xRotationSpeed = 3;
+    public float yRotationSpeed = 1;
+    public float strafingSpeed = 1 / 3;
+
     public PlayerState pState = PlayerState.active;
     private Matrix4x4 calibrationMatrix;
     private Vector3 wantedDeadZone = Vector3.zero;
+    public int playerHealth;
+    public int invincTimer = 5;
+
+    [SerializeField] private float invincCounter = 0;
 
     /**
     * Date:             April 28, 2017
@@ -65,16 +84,39 @@ public class playerMovement : MonoBehaviour
         rigidbody.freezeRotation = true;    //stop the object from rotating
 
         calibrateAccelerometer();   //calibrate the accelerometer to prevent drifiting
+
+
+        start = transform.position;  //get the starting position
+        end = GameObject.Find("wallEnd").transform.position;
+        levelDistance = Vector3.Distance(transform.position, GameObject.Find("wallEnd").transform.position);
+
+        playerHealth = startHealth;
     }
 
+    /**
+    * Date:             May 11, 2017
+    * Author:           Jay Coughlan
+    * Interface:        void Update ()
+    * Description:
+    *                   Consists of states and function calls for the main game loop
+    */
     public void Update()
     {
         //this switch statement determines the actions the player will take during the update function
         switch (pState)
         {
             case PlayerState.active:
-                //Accelerometer Input
-                transform.Translate(Input.acceleration.x, Input.acceleration.z * 0.5f, Time.deltaTime * speed);
+                //ALL MOVEMENT IS IN FIXED UPDATE.
+                break;
+            case PlayerState.damaged:
+                //we add the time between update function runs
+                invincCounter += Time.deltaTime;
+                if (invincCounter >= invincTimer)
+                {
+                    //once we surpass the counter, we set the player state and allow him to be damaged.
+                    invincCounter = 0;
+                    setPlayerState(PlayerState.active);
+                }
                 break;
             case PlayerState.dead:
                 break;
@@ -96,6 +138,8 @@ public class playerMovement : MonoBehaviour
     */
     private void FixedUpdate()
     {
+        float distanceLeft;
+        
         /* Keyboard input
         float transH = Input.GetAxis("Horizontal");
         float transV = Input.GetAxis("Vertical");
@@ -109,8 +153,17 @@ public class playerMovement : MonoBehaviour
         switch (pState)
         {
             case PlayerState.active:
-                //Accelerometer Input
-                transform.Translate(Input.acceleration.x, Input.acceleration.z * 0.5f, Time.deltaTime * speed);
+                transform.Translate(Input.acceleration.x * strafingSpeed, Input.acceleration.z * 0.5f, 0);  //move the player according to the accelerometer input
+                distanceLeft = Vector3.Distance(transform.position, end);   //setup new speed according to how far the player has moved
+                levelCompleted = distanceLeft / levelDistance; //get the percentage of completion
+                currentSpeed = speedMax - ((speedMax - speedMin) * levelCompleted); //calculates a new speed for the player's forward movement
+
+                transform.Translate(Vector3.forward * Time.deltaTime * currentSpeed);  //move the player forward 
+                transform.Rotate(new Vector3(1, 0, 0), -Input.acceleration.z * xRotationSpeed);	//rotate the player when moving up or down
+                transform.Rotate(new Vector3(0, 1, 0), Input.acceleration.x * yRotationSpeed);	//rotate the player when moving from side to side              
+                break;
+            case PlayerState.damaged:
+                transform.Translate(Input.acceleration.x, Input.acceleration.z * 0.5f, Time.deltaTime * speedMin);  //temporary speed held for a temporary amount of time
                 break;
             case PlayerState.dead:
                 break;
@@ -119,7 +172,7 @@ public class playerMovement : MonoBehaviour
             case PlayerState.victory:
                 break;
         }
-    }
+    }    
 
     /**
     * Date:             May 2, 2017
@@ -139,10 +192,14 @@ public class playerMovement : MonoBehaviour
         if (collision.gameObject.name == "TestWalls" || collision.gameObject.name == "Obstacles" ||
             collision.gameObject.name == "TestPlacement")
         {
-            transform.position = new Vector3(0, 0, 0);
-            calibrateAccelerometer(); //re-calibrate accelerometer after death to prevent drifiting
+            //transform.position = new Vector3(0, 0, 0);
+            speedMax -= 2;
+            calibrateAccelerometer(); //re-calibrate accelerometer after death to prevent 
+            speedDelay = true;
         }
     }
+
+
 
     /**
     * Date:             May 10, 2017
@@ -154,14 +211,17 @@ public class playerMovement : MonoBehaviour
     public void setPlayerState(PlayerState state)
     {
         //we determine which state we're switching to, and call any one-time functions that need to happen when that state is switched.
-
         switch (state)
         {
             case PlayerState.pause:
                 break;
             case PlayerState.active:
                 break;
+            case PlayerState.damaged:
+                break;
             case PlayerState.dead:
+                respawn();
+                state = PlayerState.active;
                 break;
             case PlayerState.victory:
                 break;
@@ -170,6 +230,8 @@ public class playerMovement : MonoBehaviour
         //now that that is run, we switch states
         pState = state;
     }
+
+
 
     /**
     * Date:             May 10, 2017
@@ -210,5 +272,40 @@ public class playerMovement : MonoBehaviour
         Vector3 accel = this.calibrationMatrix.MultiplyVector(accelerator);
         return accel;
     }
+
+    /**
+    * Date:             May 11, 2017
+    * Author:           Jay Coughlan
+    * Interface:        void lowerHealth(int)
+    * Description:
+    *                   Lowers the player's health by the inputted integer, and handles if the player dies or is just damaged.
+    */
+    public void lowerHealth(int damage)
+    {
+        //check to make sure we're in a state where damage can be done
+        if (pState == PlayerState.active)
+        {
+            speedMax = speedMax - ((speedMax - speedMin) / playerHealth);   //assert that playerHealth is greater than 0
+            playerHealth -= damage;
+
+            //if we have 0 or less, we're dead
+            if (playerHealth <= 0)
+            {
+                playerHealth = 0;
+                setPlayerState(PlayerState.dead);
+            }
+            else
+            {
+                //otherwise we're just damaged
+                setPlayerState(PlayerState.damaged);
+            }
+        }
+    }
+
+    public void respawn()
+    {
+        playerHealth = startHealth;
+        transform.position = start;
+        setPlayerState(PlayerState.active);
+    }
 }
-    
