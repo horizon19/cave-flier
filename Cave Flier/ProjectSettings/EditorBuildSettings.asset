@@ -5,9 +5,9 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 0
+  - enabled: 1
     path: Assets/Scenes/Aing/test1.unity
     guid: 8e174c7a60c2ea848ad912aa3be059c0
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Jay/TestCollider.unity
     guid: 00c62e7e0e144ef4e90df0ca1668ec44
