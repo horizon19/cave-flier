@@ -39,6 +39,7 @@ public enum PlayerState
 {
     pause,
     active,
+    damaged,
     victory,
     dead
 }
@@ -49,6 +50,10 @@ public class playerMovement : MonoBehaviour
     public PlayerState pState = PlayerState.active;
     private Matrix4x4 calibrationMatrix;
     private Vector3 wantedDeadZone = Vector3.zero;
+    public int playerHealth = 3;
+    public int invincTimer = 5;
+
+    [SerializeField] private float invincCounter = 0;
 
     /**
     * Date:             April 28, 2017
@@ -73,8 +78,17 @@ public class playerMovement : MonoBehaviour
         switch (pState)
         {
             case PlayerState.active:
-                //Accelerometer Input
-                transform.Translate(Input.acceleration.x, Input.acceleration.z * 0.5f, Time.deltaTime * speed);
+                //ALL MOVEMENT IS IN FIXED UPDATE.
+                break;
+            case PlayerState.damaged:
+                //we add the time between update function runs
+                invincCounter += Time.deltaTime;
+                if (invincCounter >= invincTimer)
+                {
+                    //once we surpass the counter, we set the player state and allow him to be damaged.
+                    invincCounter = 0;
+                    setPlayerState(PlayerState.active);
+                }
                 break;
             case PlayerState.dead:
                 break;
@@ -110,6 +124,9 @@ public class playerMovement : MonoBehaviour
         {
             case PlayerState.active:
                 //Accelerometer Input
+                transform.Translate(Input.acceleration.x, Input.acceleration.z * 0.5f, Time.deltaTime * speed);
+                break;
+            case PlayerState.damaged:
                 transform.Translate(Input.acceleration.x, Input.acceleration.z * 0.5f, Time.deltaTime * speed);
                 break;
             case PlayerState.dead:
@@ -161,6 +178,8 @@ public class playerMovement : MonoBehaviour
                 break;
             case PlayerState.active:
                 break;
+            case PlayerState.damaged:
+                break;
             case PlayerState.dead:
                 break;
             case PlayerState.victory:
@@ -210,5 +229,31 @@ public class playerMovement : MonoBehaviour
         Vector3 accel = this.calibrationMatrix.MultiplyVector(accelerator);
         return accel;
     }
+
+    /**
+    * Date:             May 11, 2017
+    * Author:           Jay Coughlan
+    * Interface:        void lowerHealth(int)
+    * Description:
+    *                   Lowers the player's health by the inputted integer, and handles if the player dies or is just damaged.
+    */
+    public void lowerHealth(int damage)
+    {
+        //check to make sure we're in a state where damage can be done
+        if (pState == PlayerState.active)
+        {
+            playerHealth -= damage;
+            //if we have 0 or less, we're dead
+            if (playerHealth <= 0)
+            {
+                playerHealth = 0;
+                setPlayerState(PlayerState.dead);
+            }
+            else
+            {
+                //otherwise we're just damaged
+                setPlayerState(PlayerState.damaged);
+            }
+        }
+    }
 }
-    
