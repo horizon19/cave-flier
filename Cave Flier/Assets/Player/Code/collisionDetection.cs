@@ -18,6 +18,7 @@ public class collisionDetection : MonoBehaviour
      */
     [SerializeField] private List<GameObject> collidedObjects = new List<GameObject>();
     [SerializeField] private List<string> collidedNames = new List<string>();
+    [SerializeField] private List<Vector3> collisions = new List<Vector3>();
 
     /**
      * These are ther private variables you cannot see
@@ -27,6 +28,8 @@ public class collisionDetection : MonoBehaviour
     private Vector3 thisPosition;
     private Renderer maxRend, lay3Rend, lay2Rend, minRend;
     private List<float> collidedMinDistances = new List<float>();
+    [SerializeField] private GameObject player;
+    private playerMovement pmScript;
 
     // Use this for initialization
     void Start()
@@ -56,6 +59,8 @@ public class collisionDetection : MonoBehaviour
             lay2Rend.enabled = true;
             minRend.enabled = true;
         }
+
+        pmScript = (playerMovement)GameObject.FindWithTag("Player").transform.GetChild(0).gameObject.GetComponent(typeof(playerMovement));
     }
 
     // Update is called once per frame
@@ -70,12 +75,15 @@ public class collisionDetection : MonoBehaviour
         layer3 = Mathf.Clamp(layer3, layer2 + 0.01f, max - 0.01f);
         max = Mathf.Max(layer2 + 0.01f, max);
 
+
+        Debug.DrawLine(this.transform.position, this.transform.forward, Color.black);
+
         //for each object we're currently colliding with, we want to check how far away the object is.
         //Depending on what threshold it falls into, we want to do specific defined behaviour 
         for (int index = 0; index < collidedObjects.Count; index++)
         {
             //first we grab the distance between us and the colliding object
-            distance = Vector3.Distance(this.transform.position, collidedObjects[index].transform.position);
+            distance = Vector3.Distance(this.transform.position, collisions[index]);//.transform.position);
 
             //this is the minimum distance, and will be used to determine the result on OnTriggerExit()
             if (distance < collidedMinDistances[index])
@@ -93,8 +101,11 @@ public class collisionDetection : MonoBehaviour
 
                 if (debug)
                 {
-                    Debug.DrawLine(thisPosition, collidedObjects[index].transform.position, colors[0]);
+                    Debug.DrawLine(thisPosition, collisions[index], colors[0]);
                 }
+
+                //here we will start with damaging code
+                pmScript.lowerHealth(1);
             }
             //if the object is within layer 2
             else if (distance < layer2)
@@ -102,7 +113,7 @@ public class collisionDetection : MonoBehaviour
                 //probably max pointage
                 if (debug)
                 {
-                    Debug.DrawLine(thisPosition, collidedObjects[index].transform.position, colors[1]);
+                    Debug.DrawLine(thisPosition, collisions[index], colors[1]);
                 }
             }
             //if the object is within layer 3
@@ -112,7 +123,7 @@ public class collisionDetection : MonoBehaviour
 
                 if (debug)
                 {
-                    Debug.DrawLine(thisPosition, collidedObjects[index].transform.position, colors[2]);
+                    Debug.DrawLine(thisPosition, collisions[index], colors[2]);
                 }
             }
             //if the object is within the maximum bounds
@@ -121,8 +132,12 @@ public class collisionDetection : MonoBehaviour
                 //likely nothing happens here
                 if (debug)
                 {
-                    Debug.DrawLine(thisPosition, collidedObjects[index].transform.position, colors[3]);
+                    Debug.DrawLine(thisPosition, collisions[index], colors[3]);
                 }
+            }
+            else
+            {
+                Debug.DrawLine(thisPosition, collisions[index], Color.cyan);
             }
         }
 
@@ -162,6 +177,7 @@ public class collisionDetection : MonoBehaviour
     */
     private void OnTriggerEnter(Collider other)
     {
+
         //we don't want to react if the collided object is the player.
         if (other.gameObject.tag != "Player")
         {
@@ -169,7 +185,7 @@ public class collisionDetection : MonoBehaviour
             if (debug)
             {
                 Debug.Log("Hit " + go.name + " at " + go.transform.position + "; distance: " + Vector3.Distance(this.transform.position, go.transform.position) +
-                " angle: " + Vector3.Angle(this.transform.forward, go.transform.position));
+                " angle: " + Vector3.Angle(this.transform.forward, go.transform.forward));
             }
 
             //now we add the GO to the list
@@ -178,6 +194,9 @@ public class collisionDetection : MonoBehaviour
                 collidedObjects.Add(go);
                 //we're adding it's distance here, and then referencing the object's index in it's own list to remove these distances later.
                 collidedMinDistances.Add(Vector3.Distance(this.transform.position, go.transform.position));
+
+                collisions.Add(other.ClosestPoint(this.transform.position));
+
                 //for testing, we're adding the object's name
                 collidedNames.Add(go.name);
             }
@@ -230,15 +249,32 @@ public class collisionDetection : MonoBehaviour
 
             //now we remove it's distance
             collidedMinDistances.RemoveAt(index);
+            collisions.RemoveAt(index);
             collidedNames.RemoveAt(index);
             //now we remove the object from the list
             collidedObjects.Remove(go);
         }
     }
 
-    class Pair
+    /**
+    * Date:             May 11, 2017
+    * Author:           Jay Coughlan
+    * Interface:        void OnTriggerStay(COllider other)
+    * Description:
+    *                   keeps track and updates the collision points for the objects colided with.
+    */
+    public void OnTriggerStay(Collider other)
     {
-        GameObject go;
-        float distance;
+        GameObject go = other.gameObject;
+        int index = 0;
+
+        if (collidedObjects.Contains(go))
+        {
+            //getting the index in the collisions array
+            index = collidedObjects.IndexOf(go);
+            //update the vector 3
+            collisions[index] = other.ClosestPoint(this.transform.position);
+        }
     }
+
 }
