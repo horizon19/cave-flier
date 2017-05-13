@@ -46,13 +46,16 @@ public enum PlayerState
 
 public class playerMovement : MonoBehaviour
 {
+    public float speedLevelMax = 17;
     public float speedMin = 10; //standard speed forward movement
-    public float speedMax = 17;
+    public float speedMax;
     private float levelDistance;
     private float startTime;
     public float currentSpeed;
     private Vector3 start;
     private Vector3 end;
+    private Vector3 startRotation;
+    public String endObject = "wallEnd";
     private float levelCompleted;
     private bool speedDelay = false;
     public int startHealth = 3;
@@ -87,8 +90,10 @@ public class playerMovement : MonoBehaviour
 
 
         start = transform.position;  //get the starting position
-        end = GameObject.Find("wallEnd").transform.position;
+        startRotation = transform.localEulerAngles; //get the starting angle of rotation
+        end = GameObject.Find(endObject).transform.position;    //get the 
         levelDistance = Vector3.Distance(transform.position, GameObject.Find("wallEnd").transform.position);
+        speedMax = speedLevelMax;
 
         playerHealth = startHealth;
     }
@@ -135,35 +140,27 @@ public class playerMovement : MonoBehaviour
     *                   Updates the object's physics and positioning before rendering.
     *                   
     * Revisions:        Aing Ragunathan (May 2, 2017) - Updated to work with accelerometer
+    *                   Aing Ragunathan (May 12, 2017) - Moved the player movement to another function, added new speed calculation
     */
     private void FixedUpdate()
     {
         float distanceLeft;
-        
-        /* Keyboard input
-        float transH = Input.GetAxis("Horizontal");
-        float transV = Input.GetAxis("Vertical");
-
-        Vector3 playerInput = new Vector3(transH, transV, Time.deltaTime*speed);
-        
-        transform.Translate(playerInput);
-        */
 
         //this switch statement determines the actions the player will take during the update function
         switch (pState)
         {
             case PlayerState.active:
                 transform.Translate(Input.acceleration.x * strafingSpeed, Input.acceleration.z * 0.5f, 0);  //move the player according to the accelerometer input
+                /*
                 distanceLeft = Vector3.Distance(transform.position, end);   //setup new speed according to how far the player has moved
                 levelCompleted = distanceLeft / levelDistance; //get the percentage of completion
                 currentSpeed = speedMax - ((speedMax - speedMin) * levelCompleted); //calculates a new speed for the player's forward movement
+                */
+                movement(updateSpeed()); //update the player's current position
 
-                transform.Translate(Vector3.forward * Time.deltaTime * currentSpeed);  //move the player forward 
-                transform.Rotate(new Vector3(1, 0, 0), -Input.acceleration.z * xRotationSpeed);	//rotate the player when moving up or down
-                transform.Rotate(new Vector3(0, 1, 0), Input.acceleration.x * yRotationSpeed);	//rotate the player when moving from side to side              
                 break;
             case PlayerState.damaged:
-                transform.Translate(Input.acceleration.x, Input.acceleration.z * 0.5f, Time.deltaTime * speedMin);  //temporary speed held for a temporary amount of time
+                movement(speedMin); //update the player's current position
                 break;
             case PlayerState.dead:
                 break;
@@ -172,7 +169,50 @@ public class playerMovement : MonoBehaviour
             case PlayerState.victory:
                 break;
         }
-    }    
+    }
+
+    /**
+    * Date:             May 12, 2017
+    * Author:           Aing Ragunathan
+    * Interface:        void movement()
+    * Description:
+    *                   Updates the object's physics and positioning before rendering.
+    */
+    public void movement(float speed)
+    {
+        //Accelerometer input
+        transform.Translate(Vector3.forward * Time.deltaTime * speed);  //move the player forward 
+        transform.Rotate(new Vector3(1, 0, 0), -Input.acceleration.z * xRotationSpeed); //rotate the player when moving up or down
+        transform.Rotate(new Vector3(0, 1, 0), Input.acceleration.x * yRotationSpeed);  //rotate the player when moving from side to side   
+        
+        /*   
+        // Keyboard input
+        float transH = Input.GetAxis("Horizontal");
+        float transV = Input.GetAxis("Vertical");
+
+        Vector3 playerInput = new Vector3(transH, transV, Time.deltaTime*speed);
+
+        transform.Translate(playerInput);
+        */
+    }
+
+    /**
+    * Date:             May 12, 2017
+    * Author:           Aing Ragunathan
+    * Interface:        void updateSpeed()
+    * Description:
+    *                   Calculates the new speed of a the player
+    */
+    public float updateSpeed()
+    {
+        float distanceLeft;
+        
+        distanceLeft = Vector3.Distance(transform.position, end);   //setup new speed according to how far the player has moved
+        levelCompleted = distanceLeft / levelDistance; //get the percentage of completion
+        currentSpeed = speedMax - ((speedMax - speedMin) * levelCompleted); //calculates a new speed for the player's forward movement
+
+        return currentSpeed;
+    }
 
     /**
     * Date:             May 2, 2017
@@ -183,7 +223,8 @@ public class playerMovement : MonoBehaviour
     *                   
     * Revision:         Aing Ragunathan (May 2, 2017) - Updated to work with parent objects.  
     *                   Jay Coughlan (May 3, 2017) - Updated if statement to reflect changed names
-    *                   Aing Ragunathan (May 3, 2017) - Updated to calibrate accelerometer.                    
+    *                   Aing Ragunathan (May 3, 2017) - Updated to calibrate accelerometer. 
+    *                   Aing Ragunathan (May 12, 2017) - Moved speed changes to lowerHealth()
     */
     void OnCollisionEnter(Collision collision)
     {
@@ -192,8 +233,6 @@ public class playerMovement : MonoBehaviour
         if (collision.gameObject.name == "TestWalls" || collision.gameObject.name == "Obstacles" ||
             collision.gameObject.name == "TestPlacement")
         {
-            //transform.position = new Vector3(0, 0, 0);
-            speedMax -= 2;
             calibrateAccelerometer(); //re-calibrate accelerometer after death to prevent 
             speedDelay = true;
         }
@@ -302,10 +341,19 @@ public class playerMovement : MonoBehaviour
         }
     }
 
+    /**
+    * Date:             May 12, 2017
+    * Author:           Aing Ragunathan
+    * Interface:        void respawn ()
+    * Description:
+    *                   Resets the player's attributes so it can start a new level.
+    */
     public void respawn()
     {
-        playerHealth = startHealth;
-        transform.position = start;
-        setPlayerState(PlayerState.active);
+        playerHealth = startHealth; //reset the player's health
+        transform.position = start; //reset the player's location
+        transform.localEulerAngles = startRotation; //reset the player's rotation angles
+        speedMax = speedLevelMax;   //reset the max potential speed
+        setPlayerState(PlayerState.active); //reset the player to an alive state again
     }
 }
