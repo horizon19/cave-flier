@@ -75,9 +75,10 @@ public class collisionDetection : MonoBehaviour
         layer3 = Mathf.Clamp(layer3, layer2 + 0.01f, max - 0.01f);
         max = Mathf.Max(layer2 + 0.01f, max);
 
-
-        Debug.DrawLine(this.transform.position, this.transform.forward, Color.black);
-
+        if (debug)
+        {
+            Debug.DrawLine(this.transform.position, this.transform.forward + this.transform.position, Color.black);
+        }
         //for each object we're currently colliding with, we want to check how far away the object is.
         //Depending on what threshold it falls into, we want to do specific defined behaviour 
         for (int index = 0; index < collidedObjects.Count; index++)
@@ -185,7 +186,7 @@ public class collisionDetection : MonoBehaviour
             if (debug)
             {
                 Debug.Log("Hit " + go.name + " at " + go.transform.position + "; distance: " + Vector3.Distance(this.transform.position, go.transform.position) +
-                " angle: " + Vector3.Angle(this.transform.forward, go.transform.forward));
+                " angle: " + Vector3.Angle(this.transform.forward, other.ClosestPoint(this.transform.position)));
             }
 
             //now we add the GO to the list
@@ -274,7 +275,15 @@ public class collisionDetection : MonoBehaviour
             index = collidedObjects.IndexOf(go);
             //update the vector 3
             collisions[index] = other.ClosestPoint(this.transform.position);
+
+            if (debug)
+            {
+                Debug.Log("Hit " + go.name + " at " + go.transform.position + "; distance: " + Vector3.Distance(this.transform.position, go.transform.position) +
+                " angle: " + Vector3.Angle(this.transform.forward, other.ClosestPoint(this.transform.position)));
+            }
         }
+
+
     }
 
 }
