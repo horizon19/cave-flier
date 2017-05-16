@@ -46,17 +46,20 @@ public enum PlayerState
 
 public class playerMovement : MonoBehaviour
 {
+    public Vector3 currentAcceleration;
+    public Vector3 camDirection;
+
     public PlayerState pState = PlayerState.active;
     public int startHealth = 3;
     public int playerHealth;
     public int invincTimer = 5;
+    public float currentSpeed;
     public float speedLevelMax = 17;
     public float speedMin = 10; 
     public float speedMax;
     public String endObjectName = "wallEnd";
     public float maxTurn;
-    public float xRotationSpeed;
-    public float yRotationSpeed;
+    
     
     private Vector3 startPosition;
     private Vector3 startRotation;
@@ -85,12 +88,14 @@ public class playerMovement : MonoBehaviour
 
 
         startPosition = transform.position;  //get the starting position
-        startRotation = transform.forward; //get the starting angle of rotation
+        startRotation = new Vector3(0, 0, 1);//transform.forward; //get the starting angle of rotation
         endObject = GameObject.Find(endObjectName).transform.position;    //get the 
         levelDistance = Vector3.Distance(transform.position, GameObject.Find("wallEnd").transform.position);
         speedMax = speedLevelMax;
 
         playerHealth = startHealth;
+
+        Debug.Log(transform.forward);
     }
 
     /**
@@ -139,6 +144,9 @@ public class playerMovement : MonoBehaviour
     */
     private void FixedUpdate()
     {
+
+        currentAcceleration = Input.acceleration;
+
         //this switch statement determines the actions the player will take during the update function
         switch (pState)
         {
@@ -172,10 +180,21 @@ public class playerMovement : MonoBehaviour
         float deltaRotation;
         Vector3 deltaCrossProduct;
 
+        //currentAcceleration = Input.acceleration;
+
         deltaRotation = Vector3.Angle(transform.forward, startRotation);    //get the difference in angle between the current and starting angles
         deltaCrossProduct = Vector3.Cross(transform.forward, startRotation);    //get the direction of turning
-        transform.Translate(0, Input.acceleration.z * 0.5f * 0, 0);  //move the player according to the accelerometer input
+        
         transform.Translate(Vector3.forward * Time.deltaTime * speed);  //move the player forward 
+        
+
+        //camDirection = new Vector3(1, 0, 1);
+        //camDirection = Camera.main.transform.TransformDirection(camDirection);
+
+        //Vector3 targetDirection = new Vector3(1f, 0f, 1f);
+        //targetDirection = Camera.main.transform.TransformDirection(targetDirection);
+        //targetDirection.y = 0.0f;
+
 
         //normal movement
         if (deltaRotation < maxTurn)// && deltaCrossProduct.y > 0 && Input.acceleration.z < 0)
@@ -203,6 +222,9 @@ public class playerMovement : MonoBehaviour
         {
             moveY();
         }
+
+        //rotate so the character stays parallel to the floor
+        
     }
 
     /**
@@ -214,7 +236,14 @@ public class playerMovement : MonoBehaviour
     */
     public void moveX()
     {
-        transform.Rotate(new Vector3(0, 1, 0), Input.acceleration.x * yRotationSpeed);  //rotate the player when moving from side to side             
+        float movement = Input.acceleration.x;
+        float yRotationSpeed = currentSpeed / 4;
+        float deadZone = 0.03f;
+
+        if (movement > deadZone || movement < -deadZone)
+        {
+            transform.Rotate(new Vector3(0, 1, 0), movement * yRotationSpeed);  //rotate the player when moving from side to side             
+        }
     }
 
     /**
@@ -226,7 +255,12 @@ public class playerMovement : MonoBehaviour
     */
     public void moveY()
     {
-        transform.Rotate(new Vector3(1, 0, 0), -Input.acceleration.z * xRotationSpeed); //rotate the player when moving up or down               
+        float xRotationSpeed = currentSpeed / 25;
+
+
+        //transform.Translate(0, Input.acceleration.z * 0.5f, 0);  //makes up and down turning feel more natural
+        transform.Translate(0, Input.acceleration.z * xRotationSpeed, 0);  //makes up and down turning feel more natural
+        //transform.Rotate(new Vector3(1, 0, 0), -Input.acceleration.z * xRotationSpeed); //rotate the player when moving up or down               
     }
 
     /**
@@ -240,7 +274,6 @@ public class playerMovement : MonoBehaviour
     {
         float distanceLeft;
         float levelCompleted;
-        float currentSpeed;
 
         distanceLeft = Vector3.Distance(transform.position, endObject);   //setup new speed according to how far the player has moved
         levelCompleted = distanceLeft / levelDistance; //get the percentage of completion
