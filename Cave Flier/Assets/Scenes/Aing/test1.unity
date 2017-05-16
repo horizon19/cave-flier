@@ -117,15 +117,15 @@ Prefab:
     m_Modifications:
     - target: {fileID: 4949041593194412, guid: f178a3b14be420f488027de043ca7136, type: 2}
       propertyPath: m_LocalPosition.x
-      value: 16.7
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4949041593194412, guid: f178a3b14be420f488027de043ca7136, type: 2}
       propertyPath: m_LocalPosition.y
-      value: 2.3
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4949041593194412, guid: f178a3b14be420f488027de043ca7136, type: 2}
       propertyPath: m_LocalPosition.z
-      value: -25.9
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4949041593194412, guid: f178a3b14be420f488027de043ca7136, type: 2}
       propertyPath: m_LocalRotation.x
@@ -159,7 +159,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4832592478542748, guid: f178a3b14be420f488027de043ca7136, type: 2}
       propertyPath: m_LocalPosition.x
-      value: -12.47
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114488721258773458, guid: f178a3b14be420f488027de043ca7136,
         type: 2}
@@ -189,7 +189,76 @@ Prefab:
     - target: {fileID: 114770136765765526, guid: f178a3b14be420f488027de043ca7136,
         type: 2}
       propertyPath: speedMin
-      value: 10
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 114770136765765526, guid: f178a3b14be420f488027de043ca7136,
+        type: 2}
+      propertyPath: xMinClamp
+      value: -90
+      objectReference: {fileID: 0}
+    - target: {fileID: 114770136765765526, guid: f178a3b14be420f488027de043ca7136,
+        type: 2}
+      propertyPath: xMaxClamp
+      value: 90
+      objectReference: {fileID: 0}
+    - target: {fileID: 114770136765765526, guid: f178a3b14be420f488027de043ca7136,
+        type: 2}
+      propertyPath: yMinClamp
+      value: -90
+      objectReference: {fileID: 0}
+    - target: {fileID: 114770136765765526, guid: f178a3b14be420f488027de043ca7136,
+        type: 2}
+      propertyPath: yMaxClamp
+      value: 90
+      objectReference: {fileID: 0}
+    - target: {fileID: 114770136765765526, guid: f178a3b14be420f488027de043ca7136,
+        type: 2}
+      propertyPath: zMinClamp
+      value: -90
+      objectReference: {fileID: 0}
+    - target: {fileID: 114770136765765526, guid: f178a3b14be420f488027de043ca7136,
+        type: 2}
+      propertyPath: zMaxClamp
+      value: 90
+      objectReference: {fileID: 0}
+    - target: {fileID: 114770136765765526, guid: f178a3b14be420f488027de043ca7136,
+        type: 2}
+      propertyPath: xClamp
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 114770136765765526, guid: f178a3b14be420f488027de043ca7136,
+        type: 2}
+      propertyPath: yClamp
+      value: 90
+      objectReference: {fileID: 0}
+    - target: {fileID: 114770136765765526, guid: f178a3b14be420f488027de043ca7136,
+        type: 2}
+      propertyPath: zClamp
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 114770136765765526, guid: f178a3b14be420f488027de043ca7136,
+        type: 2}
+      propertyPath: yRotationSpeed
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 4832592478542748, guid: f178a3b14be420f488027de043ca7136, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: -40
+      objectReference: {fileID: 0}
+    - target: {fileID: 114770136765765526, guid: f178a3b14be420f488027de043ca7136,
+        type: 2}
+      propertyPath: maxRotation
+      value: 80
+      objectReference: {fileID: 0}
+    - target: {fileID: 114770136765765526, guid: f178a3b14be420f488027de043ca7136,
+        type: 2}
+      propertyPath: maxTurn
+      value: 80
+      objectReference: {fileID: 0}
+    - target: {fileID: 114770136765765526, guid: f178a3b14be420f488027de043ca7136,
+        type: 2}
+      propertyPath: strafingSpeed
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: f178a3b14be420f488027de043ca7136, type: 2}
@@ -536,6 +605,54 @@ Prefab:
     - {fileID: 114021762896106792, guid: c38d47e4b93f73b469eee884f616c72f, type: 2}
   m_ParentPrefab: {fileID: 100100000, guid: c38d47e4b93f73b469eee884f616c72f, type: 2}
   m_IsPrefabParent: 0
+--- !u!1 &956804313
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 956804315}
+  - component: {fileID: 956804314}
+  m_Layer: 0
+  m_Name: GameObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &956804314
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 956804313}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a40b544b8c3553c40852ae7ad35a9343, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  vrModeEnabled: 1
+  distortionCorrection: 2
+  neckModelScale: 0
+  autoUntiltHead: 1
+  UseUnityRemoteInput: 0
+  screenSize: 0
+  viewerType: 1
+  stereoScreenScale: 1
+--- !u!4 &956804315
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 956804313}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 8.8420315, y: 5.2684937, z: 20.776047}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1129559510
 GameObject:
   m_ObjectHideFlags: 0
@@ -729,18 +846,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 809e08de3c322be4398f301f1790bd8a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  pState: 1
+  startHealth: 3
+  playerHealth: 0
+  invincTimer: 5
   speedLevelMax: 17
   speedMin: 10
   speedMax: 17
-  currentSpeed: 0
-  endObject: wallEnd
-  startHealth: 3
+  endObjectName: wallEnd
+  maxTurn: 0
   xRotationSpeed: 3
   yRotationSpeed: 1
-  strafingSpeed: 0
-  pState: 1
-  playerHealth: 0
-  invincTimer: 5
   invincCounter: 0
 --- !u!54 &2016551561
 Rigidbody:
