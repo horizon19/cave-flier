@@ -9,6 +9,7 @@ public class collisionDetection : MonoBehaviour
      * */
     public GameObject maximumSphere, layer3Sphere, layer2Sphere, minimumSphere; //this is the sphere the player will use to detect collision with an object
     public float min = 1, layer2 = 4, layer3 = 7, max = 10; //these will hold the minimum and maximum distances from the player to the maximum detecting distance.
+    public float headOnRange = 10;
     //these colours colour the debug line determined by what range the object collided with is in
     public Color[] colors = { Color.red, Color.yellow, Color.green, Color.blue };
     public bool debug = false; //this turns on and off the debug logs and features.
@@ -19,11 +20,12 @@ public class collisionDetection : MonoBehaviour
     [SerializeField] private List<GameObject> collidedObjects = new List<GameObject>();
     [SerializeField] private List<string> collidedNames = new List<string>();
     [SerializeField] private List<Vector3> collisions = new List<Vector3>();
+    [SerializeField] private List<float> collisionAngles = new List<float>();
 
     /**
      * These are ther private variables you cannot see
      */
-    private float distance = 0;
+    private float distance = 0, literalHeadOnRange;
     private Color tmp = Color.black;
     private Vector3 thisPosition;
     private Renderer maxRend, lay3Rend, lay2Rend, minRend;
@@ -61,6 +63,7 @@ public class collisionDetection : MonoBehaviour
         }
 
         pmScript = (playerMovement)GameObject.FindWithTag("Player").transform.GetChild(0).gameObject.GetComponent(typeof(playerMovement));
+        literalHeadOnRange = 180 - headOnRange;
     }
 
     // Update is called once per frame
@@ -74,6 +77,9 @@ public class collisionDetection : MonoBehaviour
         layer2 = Mathf.Clamp(layer2, min + 0.01f, layer3 - 0.01f);
         layer3 = Mathf.Clamp(layer3, layer2 + 0.01f, max - 0.01f);
         max = Mathf.Max(layer2 + 0.01f, max);
+
+        //now we need to make sure we're testing the proper headOnRange
+        literalHeadOnRange = 180 - headOnRange;
 
         if (debug)
         {
@@ -104,9 +110,16 @@ public class collisionDetection : MonoBehaviour
                 {
                     Debug.DrawLine(thisPosition, collisions[index], colors[0]);
                 }
-
-                //here we will start with damaging code
-                pmScript.lowerHealth(1);
+                if (collisionAngles[index] < headOnRange)//if we hit it head on
+                {
+                    Debug.LogWarning("I have collided head on with " + collidedObjects[index].name + "!!");
+                    pmScript.lowerHealth(pmScript.getHealth());
+                }
+                else//otherwise just lose health
+                {
+                    //here we will start with damaging code
+                    pmScript.lowerHealth(1);
+                }
             }
             //if the object is within layer 2
             else if (distance < layer2)
@@ -186,7 +199,7 @@ public class collisionDetection : MonoBehaviour
             if (debug)
             {
                 Debug.Log("Hit " + go.name + " at " + go.transform.position + "; distance: " + Vector3.Distance(this.transform.position, go.transform.position) +
-                " angle: " + Vector3.Angle(this.transform.forward, other.ClosestPoint(this.transform.position)));
+                " angle: " + calcCollisionAngle(other.ClosestPoint(this.transform.position)));
             }
 
             //now we add the GO to the list
@@ -195,11 +208,12 @@ public class collisionDetection : MonoBehaviour
                 collidedObjects.Add(go);
                 //we're adding it's distance here, and then referencing the object's index in it's own list to remove these distances later.
                 collidedMinDistances.Add(Vector3.Distance(this.transform.position, go.transform.position));
-
+                //we add the closest point here
                 collisions.Add(other.ClosestPoint(this.transform.position));
-
+                //and now the angle
+                collisionAngles.Add(calcCollisionAngle(other.ClosestPoint(this.transform.position)));
                 //for testing, we're adding the object's name
-                collidedNames.Add(go.name);
+                //collidedNames.Add(go.name); No longer required
             }
         }
     }
@@ -251,7 +265,8 @@ public class collisionDetection : MonoBehaviour
             //now we remove it's distance
             collidedMinDistances.RemoveAt(index);
             collisions.RemoveAt(index);
-            collidedNames.RemoveAt(index);
+            collisionAngles.RemoveAt(index);
+            //collidedNames.RemoveAt(index);
             //now we remove the object from the list
             collidedObjects.Remove(go);
         }
@@ -275,15 +290,32 @@ public class collisionDetection : MonoBehaviour
             index = collidedObjects.IndexOf(go);
             //update the vector 3
             collisions[index] = other.ClosestPoint(this.transform.position);
+            collisionAngles[index] = calcCollisionAngle(other.ClosestPoint(this.transform.position));
 
             if (debug)
             {
                 Debug.Log("Hit " + go.name + " at " + go.transform.position + "; distance: " + Vector3.Distance(this.transform.position, go.transform.position) +
-                " angle: " + Vector3.Angle(this.transform.forward, other.ClosestPoint(this.transform.position)));
+                " angle: " + calcCollisionAngle(other.ClosestPoint(this.transform.position)));
             }
         }
+    }
 
 
+    /**
+* Date:             May 15, 2017
+* Author:           Jay Coughlan
+* Interface:        void calcCollisionAngle(Vector3 onj)
+* Description:      This is a wrapper around the basic Vector3.Angle function with the purpose of keeping the math consistant
+*                   throughout the script. I want to make sure I'm using vectors of the correct directions in all instances.
+*                   
+*/
+    private float calcCollisionAngle(Vector3 obj)
+    {
+        float angle = 0;
+        //the vectors we're using is from this.position towards the forward, and this.position towards the obj
+        angle = Vector3.Angle(this.transform.forward - this.transform.position,  obj - this.transform.position);
+        //return this calculated angle
+        return angle;
     }
 
 }

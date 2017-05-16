@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
-/*
+
 [CustomEditor(typeof(collisionDetection))]
 public class CollisionDetectionEditor : Editor
 {
@@ -20,10 +20,22 @@ public class CollisionDetectionEditor : Editor
         myTarget.layer3 = EditorGUILayout.FloatField("Third Layer", myTarget.layer3);
         myTarget.max = EditorGUILayout.FloatField("Outermost Layer", myTarget.max);
 
-        myTarget.minimumSphere.transform.localScale = new Vector3(myTarget.min, myTarget.min, myTarget.min);
-        myTarget.layer2Sphere.transform.localScale = new Vector3(myTarget.layer2, myTarget.layer2, myTarget.layer2);
-        myTarget.layer3Sphere.transform.localScale = new Vector3(myTarget.layer3, myTarget.layer3, myTarget.layer3);
-        myTarget.maximumSphere.transform.localScale = new Vector3(myTarget.max, myTarget.max, myTarget.max);
+        if(myTarget.minimumSphere.transform.localScale.x != myTarget.min * 2)
+        {
+            myTarget.minimumSphere.transform.localScale = new Vector3(myTarget.min * 2, myTarget.min * 2, myTarget.min * 2);
+        }
+        if (myTarget.minimumSphere.transform.localScale.x != myTarget.layer2 * 2)
+        {
+            myTarget.layer2Sphere.transform.localScale = new Vector3(myTarget.layer2 * 2, myTarget.layer2 * 2, myTarget.layer2 * 2);
+        }
+        if (myTarget.layer3Sphere.transform.localScale.x != myTarget.layer3 * 2)
+        {
+            myTarget.layer3Sphere.transform.localScale = new Vector3(myTarget.layer3 * 2, myTarget.layer3 * 2, myTarget.layer3 * 2);
+        }
+        if (myTarget.maximumSphere.transform.localScale.x != myTarget.max * 2)
+        {
+            myTarget.maximumSphere.transform.localScale = new Vector3(myTarget.max * 2, myTarget.max * 2, myTarget.max * 2);
+        }
 
         if(myTarget.debug != myDebug)
         {
@@ -53,4 +65,4 @@ public class CollisionDetectionEditor : Editor
     }
 
 
-}*/
+}

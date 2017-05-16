@@ -342,6 +342,18 @@ public class playerMovement : MonoBehaviour
     }
 
     /**
+    * Date:             May 15, 2017
+    * Author:           Jay Coughlan
+    * Interface:        int getHealth()
+    * Description:
+    *                   Simple health getter.
+    */
+    public int getHealth()
+    {
+        return playerHealth;
+    }
+
+    /**
     * Date:             May 12, 2017
     * Author:           Aing Ragunathan
     * Interface:        void respawn ()
