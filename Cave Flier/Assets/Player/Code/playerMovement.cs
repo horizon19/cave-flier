@@ -46,29 +46,24 @@ public enum PlayerState
 
 public class playerMovement : MonoBehaviour
 {
-    public float speedLevelMax = 17;
-    public float speedMin = 10; //standard speed forward movement
-    public float speedMax;
-    private float levelDistance;
-    private float startTime;
-    public float currentSpeed;
-    private Vector3 start;
-    private Vector3 end;
-    private Vector3 startRotation;
-    public String endObject = "wallEnd";
-    private float levelCompleted;
-    private bool speedDelay = false;
-    public int startHealth = 3;
-
-    public float xRotationSpeed = 3;
-    public float yRotationSpeed = 1;
-    public float strafingSpeed = 1 / 3;
-
     public PlayerState pState = PlayerState.active;
-    private Matrix4x4 calibrationMatrix;
-    private Vector3 wantedDeadZone = Vector3.zero;
+    public int startHealth = 3;
     public int playerHealth;
     public int invincTimer = 5;
+    public float speedLevelMax = 17;
+    public float speedMin = 10; 
+    public float speedMax;
+    public String endObjectName = "wallEnd";
+    public float maxTurn;
+    public float xRotationSpeed;
+    public float yRotationSpeed;
+    
+    private Vector3 startPosition;
+    private Vector3 startRotation;
+    private float levelDistance;
+    private Vector3 endObject;
+    private Matrix4x4 calibrationMatrix;
+    private Vector3 wantedDeadZone = Vector3.zero;
 
     [SerializeField] private float invincCounter = 0;
 
@@ -89,9 +84,9 @@ public class playerMovement : MonoBehaviour
         calibrateAccelerometer();   //calibrate the accelerometer to prevent drifiting
 
 
-        start = transform.position;  //get the starting position
-        startRotation = transform.localEulerAngles; //get the starting angle of rotation
-        end = GameObject.Find(endObject).transform.position;    //get the 
+        startPosition = transform.position;  //get the starting position
+        startRotation = transform.forward; //get the starting angle of rotation
+        endObject = GameObject.Find(endObjectName).transform.position;    //get the 
         levelDistance = Vector3.Distance(transform.position, GameObject.Find("wallEnd").transform.position);
         speedMax = speedLevelMax;
 
@@ -144,20 +139,11 @@ public class playerMovement : MonoBehaviour
     */
     private void FixedUpdate()
     {
-        float distanceLeft;
-
         //this switch statement determines the actions the player will take during the update function
         switch (pState)
         {
             case PlayerState.active:
-                transform.Translate(Input.acceleration.x * strafingSpeed, Input.acceleration.z * 0.5f, 0);  //move the player according to the accelerometer input
-                /*
-                distanceLeft = Vector3.Distance(transform.position, end);   //setup new speed according to how far the player has moved
-                levelCompleted = distanceLeft / levelDistance; //get the percentage of completion
-                currentSpeed = speedMax - ((speedMax - speedMin) * levelCompleted); //calculates a new speed for the player's forward movement
-                */
                 movement(updateSpeed()); //update the player's current position
-
                 break;
             case PlayerState.damaged:
                 movement(speedMin); //update the player's current position
@@ -177,23 +163,70 @@ public class playerMovement : MonoBehaviour
     * Interface:        void movement()
     * Description:
     *                   Updates the object's physics and positioning before rendering.
+    *
+    * Revisions:        Aing Ragunathan (May 15, 2017) - Restricted turning according to input
+    *                   Aing Ragunathan (May 16, 2017) - Updated restrictions check forward angle with Vector angles instead
     */
     public void movement(float speed)
     {
-        //Accelerometer input
+        float deltaRotation;
+        Vector3 deltaCrossProduct;
+
+        deltaRotation = Vector3.Angle(transform.forward, startRotation);    //get the difference in angle between the current and starting angles
+        deltaCrossProduct = Vector3.Cross(transform.forward, startRotation);    //get the direction of turning
+        transform.Translate(0, Input.acceleration.z * 0.5f * 0, 0);  //move the player according to the accelerometer input
         transform.Translate(Vector3.forward * Time.deltaTime * speed);  //move the player forward 
-        transform.Rotate(new Vector3(1, 0, 0), -Input.acceleration.z * xRotationSpeed); //rotate the player when moving up or down
-        transform.Rotate(new Vector3(0, 1, 0), Input.acceleration.x * yRotationSpeed);  //rotate the player when moving from side to side   
-        
-        /*   
-        // Keyboard input
-        float transH = Input.GetAxis("Horizontal");
-        float transV = Input.GetAxis("Vertical");
 
-        Vector3 playerInput = new Vector3(transH, transV, Time.deltaTime*speed);
+        //normal movement
+        if (deltaRotation < maxTurn)// && deltaCrossProduct.y > 0 && Input.acceleration.z < 0)
+        {
+            moveX();
+            moveY();
+        }
+        //restriction for turning left
+        else if (deltaCrossProduct.y > 0 && Input.acceleration.x > 0)
+        {
+            moveX();
+        }
+        //restriction for turning right
+        else if (deltaCrossProduct.y < 0 && Input.acceleration.x < 0)
+        {
+            moveX();
+        }
+        //restriction for turning up
+        else if (deltaCrossProduct.x > 0 && Input.acceleration.z < 0)
+        {
+            moveY();
+        }
+        //restriction for turning down
+        else if (deltaCrossProduct.x < 0 && Input.acceleration.z > 0)
+        {
+            moveY();
+        }
+    }
 
-        transform.Translate(playerInput);
-        */
+    /**
+    * Date:             May 15, 2017
+    * Author:           Aing Ragunathan
+    * Interface:        void moveX()
+    * Description:
+    *                   Turns the object according to the x axis 
+    */
+    public void moveX()
+    {
+        transform.Rotate(new Vector3(0, 1, 0), Input.acceleration.x * yRotationSpeed);  //rotate the player when moving from side to side             
+    }
+
+    /**
+    * Date:             May 15, 2017
+    * Author:           Aing Ragunathan
+    * Interface:        void moveY()
+    * Description:
+    *                   Turns the object according to the y axis 
+    */
+    public void moveY()
+    {
+        transform.Rotate(new Vector3(1, 0, 0), -Input.acceleration.z * xRotationSpeed); //rotate the player when moving up or down               
     }
 
     /**
@@ -206,8 +239,10 @@ public class playerMovement : MonoBehaviour
     public float updateSpeed()
     {
         float distanceLeft;
-        
-        distanceLeft = Vector3.Distance(transform.position, end);   //setup new speed according to how far the player has moved
+        float levelCompleted;
+        float currentSpeed;
+
+        distanceLeft = Vector3.Distance(transform.position, endObject);   //setup new speed according to how far the player has moved
         levelCompleted = distanceLeft / levelDistance; //get the percentage of completion
         currentSpeed = speedMax - ((speedMax - speedMin) * levelCompleted); //calculates a new speed for the player's forward movement
 
@@ -234,7 +269,6 @@ public class playerMovement : MonoBehaviour
             collision.gameObject.name == "TestPlacement")
         {
             calibrateAccelerometer(); //re-calibrate accelerometer after death to prevent 
-            speedDelay = true;
         }
     }
 
@@ -351,7 +385,7 @@ public class playerMovement : MonoBehaviour
     public void respawn()
     {
         playerHealth = startHealth; //reset the player's health
-        transform.position = start; //reset the player's location
+        transform.position = startPosition; //reset the player's location
         transform.localEulerAngles = startRotation; //reset the player's rotation angles
         speedMax = speedLevelMax;   //reset the max potential speed
         setPlayerState(PlayerState.active); //reset the player to an alive state again
