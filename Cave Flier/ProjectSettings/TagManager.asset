@@ -3,7 +3,11 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - NotMainCamera
+  - LeftEye
+  - RightEye
+  - MainCameraPos
   layers:
   - Default
   - TransparentFX
@@ -13,8 +17,8 @@ TagManager:
   - UI
   - 
   - 
-  - 
-  - 
+  - Main Menu Layer
+  - Level Select Layer
   - 
   - 
   - 
