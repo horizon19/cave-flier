@@ -8,6 +8,10 @@ TagManager:
   - LeftEye
   - RightEye
   - MainCameraPos
+  - Entrance
+  - Obstacle
+  - Consumable
+  - Walls
   layers:
   - Default
   - TransparentFX
@@ -25,7 +29,7 @@ TagManager:
   - 
   - 
   - 
-  - 
+  - HUDLayer
   - 
   - 
   - 

@@ -50,6 +50,7 @@ public class ButtonInteraction : MonoBehaviour
 
     public float gazeTime = 2f; //How many seconds the player must gaze at the button to select it
     public buttons button;
+    public bool isActive = true;
 
     private float timer = 0f; //How many seconds the player has been gazing at the button
     private bool gazedAt;
@@ -59,7 +60,8 @@ public class ButtonInteraction : MonoBehaviour
     private Vector3 originalprogressBarPosition;
     private float leftSideOfParentPosition = -0.5f;
     private ScreenManager smScript;
-    public bool isActive = true;
+
+    private const string LEVEL_ONE_PATH = "Scenes/Master/Level 1";
 
     /**
     * Date:             May 13, 2017
@@ -170,7 +172,6 @@ public class ButtonInteraction : MonoBehaviour
     */
     public void PointerDown ()
     {
-        Debug.Log("pointerDown() " + button.ToString());
         switch(button)
         {
             case buttons.tutorial:           
@@ -181,7 +182,7 @@ public class ButtonInteraction : MonoBehaviour
 
                 break;
             case buttons.levelOne:
-                SceneManager.LoadScene("Scenes/Master/CaveFlier");
+                SceneManager.LoadScene(LEVEL_ONE_PATH);
                 break;
             default:
                 break;
