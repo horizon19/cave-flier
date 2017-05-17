@@ -4,19 +4,4 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes:
-  - enabled: 0
-    path: Assets/Scenes/Aing/test1.unity
-    guid: 8e174c7a60c2ea848ad912aa3be059c0
-  - enabled: 1
-    path: Assets/Scenes/Jay/TestCollider.unity
-    guid: 00c62e7e0e144ef4e90df0ca1668ec44
-  - enabled: 0
-    path: Assets/Scenes/Alex/ObstaclePlacement.unity
-    guid: 6497bf9f005acff41a4e7dd824eae0f6
-  - enabled: 0
-    path: Assets/Scenes/Jacob/MainMenu.unity
-    guid: fe414ff17e8a982469e078a602905891
-  - enabled: 0
-    path: Assets/Scenes/Master/CaveFlier.unity
-    guid: 0bf1aa97f29299e47a092c3c6bf7ebdc
+  m_Scenes: []
