@@ -4,8 +4,8 @@
 --  PROGRAM:        Cave Flier
 --
 --  FUNCTIONS:
---                  void Start ()
---                  void Update ()
+--                  public void Start ()
+--                  public void Update ()
 --                  public void PointerEnter()
 --                  public void PointerExit()
 --                  public void PointerDown()
@@ -33,9 +33,10 @@ using UnityEngine.SceneManagement;
 * 
 * Note:
 *                   When new buttons are created:
-*                   1) update the Enum.
+*                   1) Add new Enum to list.
 *                   2) update the Switch statement in Start()
 *                   3) update the Switch statement in PointerDown()
+*                   4) Select the Enum in the editor for the button in the scene
 */
 public enum buttons
 {
@@ -49,6 +50,7 @@ public class ButtonInteraction : MonoBehaviour
 
     public float gazeTime = 2f; //How many seconds the player must gaze at the button to select it
     public buttons button;
+    public bool isActive = true;
 
     private float timer = 0f; //How many seconds the player has been gazing at the button
     private bool gazedAt;
@@ -57,6 +59,9 @@ public class ButtonInteraction : MonoBehaviour
     private Vector3 originalprogressBarScale;
     private Vector3 originalprogressBarPosition;
     private float leftSideOfParentPosition = -0.5f;
+    private ScreenManager smScript;
+
+    private const string LEVEL_ONE_PATH = "Scenes/Master/Level 1";
 
     /**
     * Date:             May 13, 2017
@@ -71,6 +76,9 @@ public class ButtonInteraction : MonoBehaviour
         buttonText = gameObject.transform.GetComponentInChildren(typeof(TextMesh)) as TextMesh;
         originalprogressBarScale = progressBar.localScale;
         originalprogressBarPosition = progressBar.localPosition;
+
+        smScript = (ScreenManager)GameObject.Find("Screen Manager").GetComponent(typeof(ScreenManager));
+
         if (buttonText != null) //Set the button text if not null
         {
             switch (button)
@@ -102,7 +110,7 @@ public class ButtonInteraction : MonoBehaviour
     */
     void Update ()
     {
-		if(gazedAt) //Checks if button is being gazed at
+		if(gazedAt && isActive) //Checks if button is being gazed at
         {
             timer += Time.deltaTime; //Increases timer
             
@@ -131,6 +139,7 @@ public class ButtonInteraction : MonoBehaviour
     */
     public void PointerEnter ()
     {
+        Debug.Log("pointerEnter()");
         gazedAt = true;
     }
 
@@ -165,12 +174,15 @@ public class ButtonInteraction : MonoBehaviour
     {
         switch(button)
         {
-            case buttons.tutorial:
+            case buttons.tutorial:           
                 break;
             case buttons.levelSelect:
-                SceneManager.LoadScene("Scenes/Master/CaveFlier");
+                smScript.activateScreen(screens.levelSelectScreen);
+                smScript.deactivateScreen(screens.mainMenuScreen);
+
                 break;
             case buttons.levelOne:
+                SceneManager.LoadScene(LEVEL_ONE_PATH);
                 break;
             default:
                 break;
