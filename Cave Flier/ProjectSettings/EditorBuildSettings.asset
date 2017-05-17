@@ -4,10 +4,4 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes:
-  - enabled: 1
-    path: Assets/Scenes/Jacob/MainMenu.unity
-    guid: fe414ff17e8a982469e078a602905891
-  - enabled: 1
-    path: Assets/Scenes/Master/Level 1.unity
-    guid: f267685a6793f79458dec68b1bd63ce5
+  m_Scenes: []
