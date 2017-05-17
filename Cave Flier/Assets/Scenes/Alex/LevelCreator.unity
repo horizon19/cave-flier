@@ -311,9 +311,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f287bde76f59aba49bddaa2d289af817, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  obstaclesPerSection: 9
-  numberOfSections: 15
-  numberOfConsumables: 10
+  obstaclesPerSection: 20
+  numberOfSections: 10
+  numberOfConsumables: 3
   startBuffer: 10
   consumableBuffer: 2
 --- !u!23 &2066727773

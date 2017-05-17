@@ -212,7 +212,7 @@ public class LevelLoader : MonoBehaviour {
 	 * Programmer: Alex Zielinski
 	 * 
 	 * Description:
-	 * 		generate an array of consumables (randomly generate consumables)
+	 * 		generate an array of consumables (randomly generate consumables).
  	**********************************************************************************/
 	private void generateConsumables()
 	{
@@ -251,7 +251,7 @@ public class LevelLoader : MonoBehaviour {
 	 * Programmer: Alex Zielinski
 	 * 
 	 * Description:
-	 * 		 Randomly spawns obstacles in tunnel
+	 * 		 Randomly spawns obstacles in tunnel.
 	 **********************************************************************************/
 	private void spawnObstacles()
 	{
@@ -296,7 +296,9 @@ public class LevelLoader : MonoBehaviour {
 	 * Programmer: Alex Zielinski
 	 * 
 	 * Description:
-	 * 		 Randomly spawns consumables in tunnel
+	 * 		Randomly spawns consumables in tunnel. Checks if generated coordinates
+	 * 		collides with an obstacle. If so then coordinates are generated until 
+	 * 		they are valid.
 	 **********************************************************************************/
 	private void spawnConsumable()
 	{
@@ -316,9 +318,10 @@ public class LevelLoader : MonoBehaviour {
 			// check if consumable is to spawn in current section
 			if ((toSpawn == 0 || consumablesLeft == sectionsLeft) && consumablesLeft != 0)
 			{
-				while (collides == true)
+				do // keep looping until valid coordinates are generated
 				{
 					collides = false;
+
 					// generate consumable coords that don't collide with obstacle
 					for (int i = obstaclePos; i < (obstaclePos + obstaclesPerSection); i++)
 					{
@@ -327,20 +330,21 @@ public class LevelLoader : MonoBehaviour {
 							// include buffer so no obstacles spawn at start of level
 							cnsmbleZ = Random.Range (sectionStart + startBuffer, sectionStart + sectionSize);
 						else // spawn normally
-							cnsmbleZ= Random.Range (sectionStart, sectionStart + sectionSize);
+							cnsmbleZ = Random.Range (sectionStart, sectionStart + sectionSize);
 						
 						// randomly generate X coordinates
 						cnsmbleX = Random.Range (leftWallX + consumableBuffer, rightWallX - consumableBuffer);
 
 						// check for collision (x, y coords of consumable and all obstacles in section)
-						if (Mathf.Abs(cnsmbleX - obstacleList [i].transform.position.x) <= 2 && 
-							Mathf.Abs(cnsmbleZ - obstacleList [i].transform.position.z) <= 2)
+						if (Mathf.Abs (cnsmbleX - obstacleList [i].transform.position.x) <= 6 &&
+						    Mathf.Abs (cnsmbleZ - obstacleList [i].transform.position.z) <= 6)
 						{
-							collides = true;
-							Debug.Log("----------------HIT");
+							collides = true; // collision detected
+							Debug.Log ("----------------HIT");
 						}
 					}
-				}
+				} while (collides == true);
+
 				Debug.Log ("---GOOD SPAWN");
 
 				// randomly generate Y coordinates
@@ -353,7 +357,7 @@ public class LevelLoader : MonoBehaviour {
 				collides = true;
 			}
 
-			obstaclePos += (obstaclesPerSection - 1);
+			obstaclePos += obstaclesPerSection; // increment the position within obstacle list
 			sectionStart += sectionSize; // increment the start of the next section
 			currSection++; // increment section counter
 			sectionsLeft--; // decrement the amount of sections left
