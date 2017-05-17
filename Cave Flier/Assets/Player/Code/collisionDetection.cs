@@ -43,7 +43,7 @@ public class collisionDetection : MonoBehaviour
      * **MWAHAHAHAHAHAHA
      */
     public List<GameObject> collidedObjects = new List<GameObject>();
-    //private List<string> collidedNames = new List<string>();
+    public List<string> collidedNames = new List<string>();
     public List<Vector3> collisions = new List<Vector3>();
     public List<float> collisionAngles = new List<float>();
     public List<float> collidedMinDistances = new List<float>();
@@ -65,6 +65,10 @@ public class collisionDetection : MonoBehaviour
     private Ray ray;
     private RaycastHit hit;
     private Color[] colors = { Color.red, Color.yellow, Color.green, Color.blue };
+
+    //consumable names
+    public const string boostConsumable = "boost";
+    public const string brakeConsumable = "brake";
 
     // Use this for initialization
     void Start()
@@ -186,11 +190,8 @@ public class collisionDetection : MonoBehaviour
                     Debug.DrawLine(thisPosition, collisions[index], colors[0]);
                 }
 
-                else
-                {
-                    //here we will start with damaging code
-                    pmScript.lowerHealth(1);
-                }
+                //here we will start with damaging code
+                pmScript.lowerHealth(1);
             }
             //if the object is within layer 2
             else if (distance < layer2)
@@ -225,6 +226,86 @@ public class collisionDetection : MonoBehaviour
                 Debug.DrawLine(thisPosition, collisions[index], Color.cyan);
             }
         }
+
+        //for each object we're currently colliding with, we want to check how far away the object is.
+        //Depending on what threshold it falls into, we want to do specific defined behaviour 
+        for (int index = 0; index < consumedObjects.Count; index++)
+        {
+            //first we grab the distance between us and the colliding object
+            distance = Vector3.Distance(thisPosition, consumedCollisions[index]);//.transform.position);
+
+            //this is the minimum distance, and will be used to determine the result on OnTriggerExit()
+           /* if (distance < collidedMinDistances[index])
+            {
+                collidedMinDistances[index] = distance;
+            }*/
+
+            //we catch the distance between layers and act accordingly
+            //with the exception of death, you likely won't want to put much code in this logic, because it will ocurr on every update
+            //for most logic you want to put it into the "OnTriggerExit()" method, so it occurs once.
+            //if the object is within the minimum bounds.
+            if (distance < min)
+            {
+                //likely death state will be acitvated here
+                if (debug)
+                {
+                    Debug.DrawLine(thisPosition, consumedCollisions[index], colors[0]);
+                }
+
+                //here we will start with damaging code
+                //pmScript.lowerHealth(1);
+                //if (consumedObjects[index] != null)
+
+                //change player's properties depneding on the consumable object
+                if (consumedObjects[index].name == boostConsumable)
+                {
+                    pmScript.boostSpeed(consumedObjects[index]);    //increase speed of player and disable it
+                }
+                else if (consumedObjects[index].name == brakeConsumable)
+                {
+                    pmScript.brakeSpeed(consumedObjects[index]);    //decrease speed of player and disable it
+                }
+
+                consumedCollisions.RemoveAt(index);
+                consumedAngles.RemoveAt(index);
+                consumedDistances.RemoveAt(index);
+                consumedObjects.RemoveAt(index);
+                index--;
+            }
+            //if the object is within layer 2
+            else if (distance < layer2)
+            {
+                //probably max pointage
+                if (debug)
+                {
+                    Debug.DrawLine(thisPosition, consumedCollisions[index], colors[1]);
+                }
+            }
+            //if the object is within layer 3
+            else if (distance < layer3)
+            {
+                //minor pointage goes here
+
+                if (debug)
+                {
+                    Debug.DrawLine(thisPosition, consumedCollisions[index], colors[2]);
+                }
+            }
+            //if the object is within the maximum bounds
+            else if (distance < max)
+            {
+                //likely nothing happens here
+                if (debug)
+                {
+                    Debug.DrawLine(thisPosition, consumedCollisions[index], colors[3]);
+                }
+            }
+            else
+            {
+                Debug.DrawLine(thisPosition, consumedCollisions[index], Color.cyan);
+            }
+        }
+
 
         //we turn off the collider rendering during gameplay if we're not debugging
         //we run this code again in update in case the user wants to check debugging mid run time
