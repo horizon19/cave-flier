@@ -239,7 +239,7 @@ Prefab:
     - target: {fileID: 114770136765765526, guid: f178a3b14be420f488027de043ca7136,
         type: 2}
       propertyPath: yRotationSpeed
-      value: 5
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 4832592478542748, guid: f178a3b14be420f488027de043ca7136, type: 2}
       propertyPath: m_LocalPosition.z
@@ -259,14 +259,6 @@ Prefab:
         type: 2}
       propertyPath: strafingSpeed
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1976524310378760, guid: f178a3b14be420f488027de043ca7136, type: 2}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1976524310378760, guid: f178a3b14be420f488027de043ca7136, type: 2}
-      propertyPath: m_TagString
-      value: MainCamera
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: f178a3b14be420f488027de043ca7136, type: 2}
@@ -1133,18 +1125,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 809e08de3c322be4398f301f1790bd8a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentAcceleration: {x: 0, y: 0, z: 0}
-  camDirection: {x: 0, y: 0, z: 0}
   pState: 1
   startHealth: 3
   playerHealth: 0
   invincTimer: 5
-  currentSpeed: 0
   speedLevelMax: 17
   speedMin: 10
   speedMax: 17
   endObjectName: wallEnd
   maxTurn: 0
+  xRotationSpeed: 3
+  yRotationSpeed: 1
   invincCounter: 0
 --- !u!54 &2016551561
 Rigidbody:
