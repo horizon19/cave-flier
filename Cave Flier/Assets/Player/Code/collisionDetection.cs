@@ -1,4 +1,26 @@
-﻿using System.Collections;
+﻿/*-----------------------------------------------------------------------
+--  SOURCE FILE:    collisionDetection.cs   
+--
+--  PROGRAM:        Cave Flier
+--
+--  FUNCTIONS:
+--                  void Start ()
+--                  private void Update()
+--                  void OnTriggerEnter(Collider other)
+--                  void OnTriggerExit(Collider other)
+--                  void OnTriggerStay(Collider other)
+--                  float calcCollisionAngle(Vector3 obj)
+--                
+--  DATE:           May 3, 2017
+--
+--  DESIGNER:       Jay Coughlan
+--
+--  NOTES:
+--		            This script detects collisions of all objects, determines various information 
+--                  about them, and determines what player behavior to run, if any.
+----------------------------------------------------------------------------*/
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,27 +31,40 @@ public class collisionDetection : MonoBehaviour
      * */
     public GameObject maximumSphere, layer3Sphere, layer2Sphere, minimumSphere; //this is the sphere the player will use to detect collision with an object
     public float min = 1, layer2 = 4, layer3 = 7, max = 10; //these will hold the minimum and maximum distances from the player to the maximum detecting distance.
+    public float headOnRange = 10;
     //these colours colour the debug line determined by what range the object collided with is in
-    public Color[] colors = { Color.red, Color.yellow, Color.green, Color.blue };
+
     public bool debug = false; //this turns on and off the debug logs and features.
 
     /**
      * These are the private variables still visible in the editor
+     * edit:
+     * **I have taken control of the editor. It shows what -I- choose now. 
+     * **MWAHAHAHAHAHAHA
      */
-    [SerializeField] private List<GameObject> collidedObjects = new List<GameObject>();
-    [SerializeField] private List<string> collidedNames = new List<string>();
-    [SerializeField] private List<Vector3> collisions = new List<Vector3>();
+    public List<GameObject> collidedObjects = new List<GameObject>();
+    //private List<string> collidedNames = new List<string>();
+    public List<Vector3> collisions = new List<Vector3>();
+    public List<float> collisionAngles = new List<float>();
+    public List<float> collidedMinDistances = new List<float>();
+
+    public List<GameObject> consumedObjects = new List<GameObject>();
+    public List<Vector3> consumedCollisions = new List<Vector3>();
+    public List<float> consumedAngles = new List<float>();
+    public List<float> consumedDistances = new List<float>();
 
     /**
      * These are ther private variables you cannot see
      */
-    private float distance = 0;
+    private float distance = 0, literalHeadOnRange;
     private Color tmp = Color.black;
-    private Vector3 thisPosition;
+    private Vector3 thisPosition, thisForward;
     private Renderer maxRend, lay3Rend, lay2Rend, minRend;
-    private List<float> collidedMinDistances = new List<float>();
     [SerializeField] private GameObject player;
     private playerMovement pmScript;
+    private Ray ray;
+    private RaycastHit hit;
+    private Color[] colors = { Color.red, Color.yellow, Color.green, Color.blue };
 
     // Use this for initialization
     void Start()
@@ -61,6 +96,12 @@ public class collisionDetection : MonoBehaviour
         }
 
         pmScript = (playerMovement)GameObject.FindWithTag("Player").transform.GetChild(0).gameObject.GetComponent(typeof(playerMovement));
+
+        //set the ray to start at our position
+        ray.origin = this.transform.position;
+        //set it's direction
+        ray.direction = this.transform.forward;
+        // literalHeadOnRange = 180 - headOnRange;
     }
 
     // Update is called once per frame
@@ -68,6 +109,13 @@ public class collisionDetection : MonoBehaviour
     {
         //instead of finding this objects position all the time, we simply put it into a static variable and call it once a frame.
         thisPosition = this.transform.position;
+        thisForward = this.transform.forward;
+
+        //we update our raycast
+        //set the ray to start at our position
+        ray.origin = thisPosition;
+        //set it's direction
+        ray.direction = thisForward;
 
         //we are going to clamp the values of the layers now to make sure they fit appropriately within each other
         min = Mathf.Clamp(min, 0, layer2 - 0.01f);
@@ -75,15 +123,50 @@ public class collisionDetection : MonoBehaviour
         layer3 = Mathf.Clamp(layer3, layer2 + 0.01f, max - 0.01f);
         max = Mathf.Max(layer2 + 0.01f, max);
 
+        //now we need to make sure we're testing the proper headOnRange
+        //literalHeadOnRange = 180 - headOnRange;
 
-        Debug.DrawLine(this.transform.position, this.transform.forward, Color.black);
+        if (debug)
+        {
+            Debug.DrawRay(ray.origin, ray.direction, Color.green);
+        }
 
+        if (Physics.Raycast(ray, out hit, Vector3.Magnitude(ray.direction)))
+        {
+            switch (hit.collider.tag)
+            {
+                case "Entrance":
+                    //so far entrance behavior is the same as obstacle, so we flow through
+                case "Walls":
+                    //so far wall behavior is the same as obstacle so we flow through
+                case "Obstacle":
+                    //show off our fancy raycast skillz and turn it red.
+                    if (debug)
+                    {
+                        Debug.LogWarning("The raycast has hit " + hit.collider.name);
+                        Debug.DrawRay(ray.origin, ray.direction, Color.red);
+                    }
+                    //if the raycast has hit (and if we're here, it has)
+                    //you ded son
+                    pmScript.lowerHealth(pmScript.getHealth());
+                    break;
+                default:
+                    //if we hit anything that's not walls, the entrance, or an obstacle, turn it yellow, but continue.
+                    if (debug)
+                    {
+                        Debug.LogWarning("The raycast has hit " + hit.collider.name);
+                        Debug.DrawRay(ray.origin, ray.direction, Color.yellow);
+                    }
+                    break;
+            }
+
+        }
         //for each object we're currently colliding with, we want to check how far away the object is.
         //Depending on what threshold it falls into, we want to do specific defined behaviour 
         for (int index = 0; index < collidedObjects.Count; index++)
         {
             //first we grab the distance between us and the colliding object
-            distance = Vector3.Distance(this.transform.position, collisions[index]);//.transform.position);
+            distance = Vector3.Distance(thisPosition, collisions[index]);//.transform.position);
 
             //this is the minimum distance, and will be used to determine the result on OnTriggerExit()
             if (distance < collidedMinDistances[index])
@@ -98,14 +181,16 @@ public class collisionDetection : MonoBehaviour
             if (distance < min)
             {
                 //likely death state will be acitvated here
-
                 if (debug)
                 {
                     Debug.DrawLine(thisPosition, collisions[index], colors[0]);
                 }
 
-                //here we will start with damaging code
-                pmScript.lowerHealth(1);
+                else
+                {
+                    //here we will start with damaging code
+                    pmScript.lowerHealth(1);
+                }
             }
             //if the object is within layer 2
             else if (distance < layer2)
@@ -177,29 +262,63 @@ public class collisionDetection : MonoBehaviour
     */
     private void OnTriggerEnter(Collider other)
     {
+        GameObject go = other.gameObject;//the object we've encountered
+        thisPosition = this.transform.position;
 
-        //we don't want to react if the collided object is the player.
-        if (other.gameObject.tag != "Player")
+
+        switch (other.tag)
         {
-            GameObject go = other.gameObject;//the object we've encountered
-            if (debug)
-            {
-                Debug.Log("Hit " + go.name + " at " + go.transform.position + "; distance: " + Vector3.Distance(this.transform.position, go.transform.position) +
-                " angle: " + Vector3.Angle(this.transform.forward, go.transform.forward));
-            }
+            case "Entrance":
+            //we want entrance to fall through to obstacles because the behavior is the same.
+            case "Walls":
+            //we want walls to fall through to obstacles because the behavior is precisely the same.
+            case "Obstacle":
 
-            //now we add the GO to the list
-            if (!collidedObjects.Contains(go)) //we make sure we're not somehow adding a duplicate object to the list.
-            {
-                collidedObjects.Add(go);
-                //we're adding it's distance here, and then referencing the object's index in it's own list to remove these distances later.
-                collidedMinDistances.Add(Vector3.Distance(this.transform.position, go.transform.position));
+                if (debug)
+                {
+                    Debug.Log("Hit obstacle " + go.name + " at " + go.transform.position + "; distance: " + Vector3.Distance(thisPosition, go.transform.position) +
+                    " angle: " + calcCollisionAngle(other.ClosestPoint(thisPosition)));
+                }
 
-                collisions.Add(other.ClosestPoint(this.transform.position));
+                //now we add the GO to the list
+                if (!collidedObjects.Contains(go)) //we make sure we're not somehow adding a duplicate object to the list.
+                {
+                    collidedObjects.Add(go);
+                    //we're adding it's distance here, and then referencing the object's index in it's own list to remove these distances later.
+                    collidedMinDistances.Add(Vector3.Distance(thisPosition, go.transform.position));
+                    //we add the closest point here
+                    collisions.Add(other.ClosestPoint(thisPosition));
+                    //and now the angle
+                    collisionAngles.Add(calcCollisionAngle(other.ClosestPoint(thisPosition)));
+                    //for testing, we're adding the object's name
+                    //collidedNames.Add(go.name); No longer required
+                }
+                break;
+            case "Consumable":
+                if (debug)
+                {
+                    Debug.Log("Hit consumable " + go.name + " at " + go.transform.position + "; distance: " + Vector3.Distance(thisPosition, go.transform.position) +
+                    " angle: " + calcCollisionAngle(other.ClosestPoint(thisPosition)));
+                }
 
-                //for testing, we're adding the object's name
-                collidedNames.Add(go.name);
-            }
+                //now we add the GO to the list
+                if (!consumedObjects.Contains(go)) //we make sure we're not somehow adding a duplicate object to the list.
+                {
+                    consumedObjects.Add(go);
+                    //we're adding it's distance here, and then referencing the object's index in it's own list to remove these distances later.
+                    consumedDistances.Add(Vector3.Distance(thisPosition, go.transform.position));
+                    //we add the closest point here
+                    consumedCollisions.Add(other.ClosestPoint(thisPosition));
+                    //and now the angle
+                    consumedAngles.Add(calcCollisionAngle(other.ClosestPoint(thisPosition)));
+                    //for testing, we're adding the object's name
+                    //collidedNames.Add(go.name); No longer required
+                }
+                break;
+            case "Player":
+                break;
+            default:
+                break;
         }
     }
 
@@ -220,40 +339,71 @@ public class collisionDetection : MonoBehaviour
             Debug.Log("Removing " + go.name + " at " + go.transform.position + "; distance: " + Vector3.Distance(this.transform.position, go.transform.position));
         }
 
-        if (collidedObjects.Contains(go))//we want to make sure this object wasn't, by some miracle, removed from the list prematurely
+        switch (other.tag)
         {
-            //first get the objects index
-            index = collidedObjects.IndexOf(go);
+            case "Entrance":
+            //we want entrance to fall through to obstacles because the behavior is the same
+            case "Walls":
+            //we want walls to fall through to obstacles because the behavior is precisely the same.
+            case "Obstacle":
+                if (collidedObjects.Contains(go))//we want to make sure this object wasn't, by some miracle, removed from the list prematurely
+                {
+                    //first get the objects index
+                    index = collidedObjects.IndexOf(go);
 
-            //here we decide what we want to do when the object leaves the area
-            if (collidedMinDistances[index] < min)
-            {
-                //within the bounds of our innermost layer. Likely we should not hit this either, as a death should be dealt with in the update loop
-            }
-            else if (collidedMinDistances[index] > min && collidedMinDistances[index] < layer2)
-            {
-                //second most inner layer, many many points
-            }
-            else if (collidedMinDistances[index] > layer2 && collidedMinDistances[index] < layer3)
-            {
-                //third most inner layer, some points maybe?
-            }
-            else if (collidedMinDistances[index] > layer3 && collidedMinDistances[index] < max)
-            {
-                //if it is within the bounds of our outer layer
-            }
-            else
-            {
-                //this statement is here just in case, but should never be encountered since the distance would have to be larger than the collider
-            }
+                    //here we decide what we want to do when the object leaves the area
+                    if (collidedMinDistances[index] < min)
+                    {
+                        //within the bounds of our innermost layer. Likely we should not hit this either, as a death should be dealt with in the update loop
+                    }
+                    else if (collidedMinDistances[index] > min && collidedMinDistances[index] < layer2)
+                    {
+                        //second most inner layer, many many points
+                    }
+                    else if (collidedMinDistances[index] > layer2 && collidedMinDistances[index] < layer3)
+                    {
+                        //third most inner layer, some points maybe?
+                    }
+                    else if (collidedMinDistances[index] > layer3 && collidedMinDistances[index] < max)
+                    {
+                        //if it is within the bounds of our outer layer
+                    }
+                    else
+                    {
+                        //this statement is here just in case, but should never be encountered since the distance would have to be larger than the collider
+                    }
 
-            //now we remove it's distance
-            collidedMinDistances.RemoveAt(index);
-            collisions.RemoveAt(index);
-            collidedNames.RemoveAt(index);
-            //now we remove the object from the list
-            collidedObjects.Remove(go);
+                    //now we remove it's distance
+                    collidedMinDistances.RemoveAt(index);
+                    collisions.RemoveAt(index);
+                    collisionAngles.RemoveAt(index);
+                    //collidedNames.RemoveAt(index);
+                    //now we remove the object from the list
+                    collidedObjects.Remove(go);
+                }
+                break;
+            case "Consumable":
+                if (collidedObjects.Contains(go))//we want to make sure this object wasn't, by some miracle, removed from the list prematurely
+                {
+                    //first get the objects index
+                    index = consumedObjects.IndexOf(go);
+
+                    //now we remove it's distance
+                    consumedDistances.RemoveAt(index);
+                    consumedCollisions.RemoveAt(index);
+                    consumedAngles.RemoveAt(index);
+                    //collidedNames.RemoveAt(index);
+                    //now we remove the object from the list
+                    collidedObjects.Remove(go);
+                }
+                break;
+            case "Player":
+                break;
+            default:
+                break;
         }
+
+
     }
 
     /**
@@ -266,15 +416,74 @@ public class collisionDetection : MonoBehaviour
     public void OnTriggerStay(Collider other)
     {
         GameObject go = other.gameObject;
+        thisPosition = this.transform.position;
         int index = 0;
 
-        if (collidedObjects.Contains(go))
+        switch (other.tag)
         {
-            //getting the index in the collisions array
-            index = collidedObjects.IndexOf(go);
-            //update the vector 3
-            collisions[index] = other.ClosestPoint(this.transform.position);
+            case "Entrance":
+            //we want entrance to fall through to obstacles as well because the behavior is the same.
+            case "Walls":
+            //we want walls to fall through to obstacles because the behavior is precisely the same.
+            case "Obstacle":
+                if (collidedObjects.Contains(go))
+                {
+                    //getting the index in the collisions array
+                    index = collidedObjects.IndexOf(go);
+                    //update the vector 3
+                    collisions[index] = other.ClosestPoint(thisPosition);
+                    collisionAngles[index] = calcCollisionAngle(other.ClosestPoint(thisPosition));
+
+                    if (debug)
+                    {
+                        Debug.Log("Hit obstacle " + go.name + " at " + go.transform.position + "; distance: " +
+                            Vector3.Distance(thisPosition, go.transform.position) +
+                        " angle: " + calcCollisionAngle(other.ClosestPoint(thisPosition)));
+                    }
+                }
+                break;
+            case "Consumable":
+                if (consumedObjects.Contains(go))
+                {
+                    //getting the index in the collisions array
+                    index = consumedObjects.IndexOf(go);
+                    //update the vector 3
+                    consumedCollisions[index] = other.ClosestPoint(thisPosition);
+                    consumedAngles[index] = calcCollisionAngle(other.ClosestPoint(thisPosition));
+
+                    if (debug)
+                    {
+                        Debug.Log("Hit consumable" + go.name + " at " + go.transform.position + "; distance: " +
+                            Vector3.Distance(thisPosition, go.transform.position) +
+                        " angle: " + calcCollisionAngle(other.ClosestPoint(thisPosition)));
+                    }
+                }
+                break;
+            case "Player":
+                break;
+            default:
+                break;
         }
+
+
+    }
+
+
+    /**
+* Date:             May 15, 2017
+* Author:           Jay Coughlan
+* Interface:        void calcCollisionAngle(Vector3 onj)
+* Description:      This is a wrapper around the basic Vector3.Angle function with the purpose of keeping the math consistant
+*                   throughout the script. I want to make sure I'm using vectors of the correct directions in all instances.
+*                   
+*/
+    private float calcCollisionAngle(Vector3 obj)
+    {
+        float angle = 0;
+        //the vectors we're using is from this.position towards the forward, and this.position towards the obj
+        angle = Vector3.Angle(this.transform.forward - this.transform.position, obj - this.transform.position);
+        //return this calculated angle
+        return angle;
     }
 
 }
