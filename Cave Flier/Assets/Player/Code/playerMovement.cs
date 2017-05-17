@@ -66,6 +66,7 @@ public class playerMovement : MonoBehaviour
     private Vector3 endObject;
     private Matrix4x4 calibrationMatrix;
     private Vector3 wantedDeadZone = Vector3.zero;
+    private HUDController hudScript;
 
     [SerializeField] private float invincCounter = 0;
 
@@ -80,6 +81,7 @@ public class playerMovement : MonoBehaviour
     */
     private void Start()
     {
+        hudScript = this.transform.GetChild(2).transform.GetChild(0).GetComponent<HUDController>();
         Rigidbody rigidbody = GetComponent<Rigidbody>();    //get the physics of the object
         rigidbody.freezeRotation = true;    //stop the object from rotating
 
@@ -406,6 +408,8 @@ public class playerMovement : MonoBehaviour
                 setPlayerState(PlayerState.damaged);
             }
         }
+
+        hudScript.updatePlayerHealth(playerHealth);
     }
 
     /**
@@ -430,6 +434,7 @@ public class playerMovement : MonoBehaviour
     public void respawn()
     {
         playerHealth = startHealth; //reset the player's health
+        hudScript.updatePlayerHealth(playerHealth);
         transform.position = startPosition; //reset the player's location
         transform.localEulerAngles = startRotation; //reset the player's rotation angles
         speedMax = speedLevelMax;   //reset the max potential speed

@@ -185,12 +185,8 @@ public class collisionDetection : MonoBehaviour
                 {
                     Debug.DrawLine(thisPosition, collisions[index], colors[0]);
                 }
-
-                else
-                {
-                    //here we will start with damaging code
-                    pmScript.lowerHealth(1);
-                }
+                //here we will start with damaging code
+                pmScript.lowerHealth(1);
             }
             //if the object is within layer 2
             else if (distance < layer2)
