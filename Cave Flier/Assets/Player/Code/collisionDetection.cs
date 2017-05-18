@@ -66,10 +66,6 @@ public class collisionDetection : MonoBehaviour
     private RaycastHit hit;
     private Color[] colors = { Color.red, Color.yellow, Color.green, Color.blue };
 
-    //consumable names
-    public const string boostConsumable = "boost";
-    public const string brakeConsumable = "brake";
-
     // Use this for initialization
     void Start()
     {
@@ -108,7 +104,15 @@ public class collisionDetection : MonoBehaviour
         // literalHeadOnRange = 180 - headOnRange;
     }
 
-    // Update is called once per frame
+	/**
+    * Date:             May 3, 2017
+    * Author:           Jay Coughlan
+    * Interface:        void Update ()
+    * Description:
+    *                   Update is called once per frame.
+    *
+    * Revision:			Aing Ragunathan (May 17, 2017) - Added call to playerMovement.cs to update speed when consumable is obtained
+    */
     void Update()
     {
         //instead of finding this objects position all the time, we simply put it into a static variable and call it once a frame.
@@ -254,18 +258,9 @@ public class collisionDetection : MonoBehaviour
 
                 //here we will start with damaging code
                 //pmScript.lowerHealth(1);
-                //if (consumedObjects[index] != null)
 
                 //change player's properties depneding on the consumable object
-                if (consumedObjects[index].name == boostConsumable)
-                {
-                    pmScript.boostSpeed(consumedObjects[index]);    //increase speed of player and disable it
-                }
-                else if (consumedObjects[index].name == brakeConsumable)
-                {
-                    pmScript.brakeSpeed(consumedObjects[index]);    //decrease speed of player and disable it
-                }
-
+                pmScript.consume(consumedObjects[index]);    //increase speed of player and disable it
                 consumedCollisions.RemoveAt(index);
                 consumedAngles.RemoveAt(index);
                 consumedDistances.RemoveAt(index);
