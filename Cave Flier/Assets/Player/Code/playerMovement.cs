@@ -52,14 +52,16 @@ public class playerMovement : MonoBehaviour
     public int startHealth = 3;
     public int playerHealth;
     public int invincTimer = 5;
+    public int playerPoints = 0;
     public float currentSpeed;
     public float speedLevelMax = 17;
-    public float speedMin = 10; 
+    public float speedMin = 10;
     public float speedMax;
+    public float consumableSpeedDif = 5;
     public String endObjectName = "wallEnd";
     public float maxTurn;
-    
-    
+
+
     private Vector3 startPosition;
     private Vector3 startRotation;
     private float levelDistance;
@@ -67,6 +69,8 @@ public class playerMovement : MonoBehaviour
     private Matrix4x4 calibrationMatrix;
     private Vector3 wantedDeadZone = Vector3.zero;
     private ScreenManager smScript;
+    private HUDController hudScript;
+    private collisionDetection cdScript;
 
     [SerializeField] private float invincCounter = 0;
 
@@ -78,9 +82,11 @@ public class playerMovement : MonoBehaviour
     *                   Initializes the player when the object is created.
     *                   
     * Revision:         Aing Ragunathan (May 3, 2017) - Updated to calibrate accelerometer.                    
-    */
+*/
     private void Start()
     {
+        hudScript = this.transform.GetChild(2).transform.GetChild(0).GetComponent<HUDController>();
+        cdScript = this.transform.GetChild(3).transform.GetChild(0).GetComponent<collisionDetection>();
         Rigidbody rigidbody = GetComponent<Rigidbody>();    //get the physics of the object
         rigidbody.freezeRotation = true;    //stop the object from rotating
 
@@ -105,7 +111,7 @@ public class playerMovement : MonoBehaviour
     * Interface:        void Update ()
     * Description:
     *                   Consists of states and function calls for the main game loop
-    */
+*/
     public void Update()
     {
         //this switch statement determines the actions the player will take during the update function
@@ -142,7 +148,7 @@ public class playerMovement : MonoBehaviour
     *                   
     * Revisions:        Aing Ragunathan (May 2, 2017) - Updated to work with accelerometer
     *                   Aing Ragunathan (May 12, 2017) - Moved the player movement to another function, added new speed calculation
-    */
+*/
     private void FixedUpdate()
     {
 
@@ -173,29 +179,18 @@ public class playerMovement : MonoBehaviour
     * Description:
     *                   Updates the object's physics and positioning before rendering.
     *
+
     * Revisions:        Aing Ragunathan (May 15, 2017) - Restricted turning according to input
     *                   Aing Ragunathan (May 16, 2017) - Updated restrictions check forward angle with Vector angles instead
-    */
+*/
     public void movement(float speed)
     {
         float deltaRotation;
         Vector3 deltaCrossProduct;
 
-        //currentAcceleration = Input.acceleration;
-
         deltaRotation = Vector3.Angle(transform.forward, startRotation);    //get the difference in angle between the current and starting angles
         deltaCrossProduct = Vector3.Cross(transform.forward, startRotation);    //get the direction of turning
-        
         transform.Translate(Vector3.forward * Time.deltaTime * speed);  //move the player forward 
-        
-
-        //camDirection = new Vector3(1, 0, 1);
-        //camDirection = Camera.main.transform.TransformDirection(camDirection);
-
-        //Vector3 targetDirection = new Vector3(1f, 0f, 1f);
-        //targetDirection = Camera.main.transform.TransformDirection(targetDirection);
-        //targetDirection.y = 0.0f;
-
 
         //normal movement
         if (deltaRotation < maxTurn)// && deltaCrossProduct.y > 0 && Input.acceleration.z < 0)
@@ -215,6 +210,7 @@ public class playerMovement : MonoBehaviour
         }
         //restriction for turning up
         else if (deltaCrossProduct.x > 0 && Input.acceleration.z < 0)
+
         {
             moveY();
         }
@@ -223,9 +219,6 @@ public class playerMovement : MonoBehaviour
         {
             moveY();
         }
-
-        //rotate so the character stays parallel to the floor
-        
     }
 
     /**
@@ -234,7 +227,7 @@ public class playerMovement : MonoBehaviour
     * Interface:        void moveX()
     * Description:
     *                   Turns the object according to the x axis 
-    */
+*/
     public void moveX()
     {
         float movement = Input.acceleration.x;
@@ -253,7 +246,7 @@ public class playerMovement : MonoBehaviour
     * Interface:        void moveY()
     * Description:
     *                   Turns the object according to the y axis 
-    */
+*/
     public void moveY()
     {
         float xRotationSpeed = currentSpeed / 25;
@@ -261,7 +254,7 @@ public class playerMovement : MonoBehaviour
 
         //transform.Translate(0, Input.acceleration.z * 0.5f, 0);  //makes up and down turning feel more natural
         transform.Translate(0, Input.acceleration.z * xRotationSpeed, 0);  //makes up and down turning feel more natural
-        //transform.Rotate(new Vector3(1, 0, 0), -Input.acceleration.z * xRotationSpeed); //rotate the player when moving up or down               
+                                                                           //transform.Rotate(new Vector3(1, 0, 0), -Input.acceleration.z * xRotationSpeed); //rotate the player when moving up or down               
     }
 
     /**
@@ -270,7 +263,7 @@ public class playerMovement : MonoBehaviour
     * Interface:        void updateSpeed()
     * Description:
     *                   Calculates the new speed of a the player
-    */
+*/
     public float updateSpeed()
     {
         float distanceLeft;
@@ -284,6 +277,30 @@ public class playerMovement : MonoBehaviour
     }
 
     /**
+    * Date:             May 17, 2017
+    * Author:           Aing Ragunathan
+    * Interface:        void consume(GameObject consumable)
+    * Description:
+    *                   Updates the max speed of the player when a boost consumabled is obtained.
+*/
+    public void consume(GameObject consumable)
+    {
+        switch (consumable.name)
+        {
+            case "boost":
+                speedMax += consumableSpeedDif;
+                Debug.Log("boost");
+                break;
+            case "brake":
+                speedMax -= consumableSpeedDif;
+                Debug.Log("brake");
+                break;
+        }
+
+        consumable.GetComponent<SphereCollider>().enabled = false; //disable the consumable object
+    }
+
+    /**
     * Date:             May 2, 2017
     * Author:           Alex Zielinski
     * Interface:        void OnCollisionEnter ()
@@ -294,7 +311,7 @@ public class playerMovement : MonoBehaviour
     *                   Jay Coughlan (May 3, 2017) - Updated if statement to reflect changed names
     *                   Aing Ragunathan (May 3, 2017) - Updated to calibrate accelerometer. 
     *                   Aing Ragunathan (May 12, 2017) - Moved speed changes to lowerHealth()
-    */
+*/
     void OnCollisionEnter(Collision collision)
     {
         //Reset the level when a collision is detected with a wall or obstacle
@@ -307,15 +324,13 @@ public class playerMovement : MonoBehaviour
         }
     }
 
-
-
     /**
     * Date:             May 10, 2017
     * Author:           Jay Coughlan
     * Interface:        void setPlayerState(PlayerState)
     * Description:
     *                   Changes the player state and runs one time functions that come with the new state.
-    */
+*/
     public void setPlayerState(PlayerState state)
     {
         //we determine which state we're switching to, and call any one-time functions that need to happen when that state is switched.
@@ -341,15 +356,13 @@ public class playerMovement : MonoBehaviour
         pState = state;
     }
 
-
-
     /**
     * Date:             May 10, 2017
     * Author:           Jay Coughlan
     * Interface:        PlayerState getPlayerState()
     * Description:
     *                   returns the current player state
-    */
+*/
     public PlayerState getPlayerState()
     {
         return pState;
@@ -361,7 +374,7 @@ public class playerMovement : MonoBehaviour
     * Interface:        void calibrateAccelerometer ()
     * Description:
     *                   Method for calibrating the accelerometer                
-    */
+*/
     void calibrateAccelerometer()
     {
         wantedDeadZone = Input.acceleration;
@@ -376,7 +389,7 @@ public class playerMovement : MonoBehaviour
     * Interface:        void getAccelerometer ()
     * Description:
     *                   Gets the calibrated input using the real input
-    */
+*/
     Vector3 getAccelerometer(Vector3 accelerator)
     {
         Vector3 accel = this.calibrationMatrix.MultiplyVector(accelerator);
@@ -389,7 +402,7 @@ public class playerMovement : MonoBehaviour
     * Interface:        void lowerHealth(int)
     * Description:
     *                   Lowers the player's health by the inputted integer, and handles if the player dies or is just damaged.
-    */
+*/
     public void lowerHealth(int damage)
     {
         //check to make sure we're in a state where damage can be done
@@ -410,6 +423,8 @@ public class playerMovement : MonoBehaviour
                 setPlayerState(PlayerState.damaged);
             }
         }
+
+        hudScript.updatePlayerHealth(playerHealth);
     }
 
     /**
@@ -433,10 +448,53 @@ public class playerMovement : MonoBehaviour
     */
     public void respawn()
     {
+        cdScript.purgeCollisions();
         playerHealth = startHealth; //reset the player's health
+        hudScript.updatePlayerHealth(playerHealth);
+        setPoints(0);//reset the players points
+        hudScript.updatePlayerPoints(getPoints());
         transform.position = startPosition; //reset the player's location
         transform.localEulerAngles = startRotation; //reset the player's rotation angles
         speedMax = speedLevelMax;   //reset the max potential speed
         setPlayerState(PlayerState.active); //reset the player to an alive state again
+    }
+
+    /**
+    * Date:             May 17, 2017
+    * Author:           Jay Coughlan
+    * Interface:        void addPoints (int mult = 1)
+    * Description:
+    *                   Adds points to the player score based on the input multiplyer. The default
+    *                   for the multiplyer is 1, giving the player 10 points. This also calls the HUD to update.
+    */
+    public void addPoints(int mult = 1)
+    {
+        playerPoints += 10 * mult;
+        hudScript.updatePlayerPoints(playerPoints);
+    }
+
+    /**
+    * Date:             May 17, 2017
+    * Author:           Jay Coughlan
+    * Interface:        int getPoints()
+
+   * Description:
+    *                   Returns the current points the player has.
+    */
+    public int getPoints()
+    {
+        return playerPoints;
+    }
+
+    /**
+    * Date:             May 17, 2017
+    * Author:           Jay Coughlan
+    * Interface:        void setPoints()
+    * Description:
+    *                   set's the player's points to the specified amount
+    */
+    public void setPoints(int points)
+    {
+        playerPoints = points;
     }
 }

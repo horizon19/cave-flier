@@ -12,6 +12,8 @@ TagManager:
   - Obstacle
   - Consumable
   - Walls
+  - Start Volume
+  - End Volume
   layers:
   - Default
   - TransparentFX
