@@ -4,6 +4,10 @@
 TagManager:
   serializedVersion: 2
   tags:
+  - NotMainCamera
+  - LeftEye
+  - RightEye
+  - MainCameraPos
   - Entrance
   - Obstacle
   - Consumable
@@ -19,8 +23,8 @@ TagManager:
   - UI
   - 
   - 
-  - 
-  - 
+  - Main Menu Layer
+  - Level Select Layer
   - 
   - 
   - 
