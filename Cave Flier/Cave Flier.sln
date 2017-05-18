@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2017
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cave Flier", "Cave Flier.csproj", "{464AB96B-F740-7B19-13C3-339CF1EBFC30}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cave Flier.Editor", "Cave Flier.Editor.csproj", "{CD5FDF5A-CD96-3889-5662-0C198BF07F14}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{464AB96B-F740-7B19-13C3-339CF1EBFC30}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{464AB96B-F740-7B19-13C3-339CF1EBFC30}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{464AB96B-F740-7B19-13C3-339CF1EBFC30}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{464AB96B-F740-7B19-13C3-339CF1EBFC30}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CD5FDF5A-CD96-3889-5662-0C198BF07F14}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD5FDF5A-CD96-3889-5662-0C198BF07F14}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD5FDF5A-CD96-3889-5662-0C198BF07F14}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD5FDF5A-CD96-3889-5662-0C198BF07F14}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
