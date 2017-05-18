@@ -42,7 +42,9 @@ public enum buttons
 {
     levelSelect,
     tutorial,
-    levelOne
+    levelOne,
+    replayLevel,
+    goToMainMenu
 }
 
 public class ButtonInteraction : MonoBehaviour
@@ -60,8 +62,10 @@ public class ButtonInteraction : MonoBehaviour
     private Vector3 originalprogressBarPosition;
     private float leftSideOfParentPosition = -0.5f;
     private ScreenManager smScript;
+    private playerMovement pmScript;
 
-    private const string LEVEL_ONE_PATH = "Scenes/Master/Level 1";
+    private const string LEVEL_ONE_PATH = "Scenes/Jacob/TestCollider";
+    private const string MAIN_MENU_PATH = "Scenes/Jacob/mainMenu";
 
     /**
     * Date:             May 13, 2017
@@ -78,6 +82,7 @@ public class ButtonInteraction : MonoBehaviour
         originalprogressBarPosition = progressBar.localPosition;
 
         smScript = (ScreenManager)GameObject.Find("Screen Manager").GetComponent(typeof(ScreenManager));
+        pmScript = (playerMovement)GameObject.FindWithTag("Player").transform.GetChild(0).gameObject.GetComponent(typeof(playerMovement));
 
         if (buttonText != null) //Set the button text if not null
         {
@@ -91,6 +96,12 @@ public class ButtonInteraction : MonoBehaviour
                     break;
                 case buttons.levelOne:
                     buttonText.text = "Level 1";
+                    break;
+                case buttons.replayLevel:
+                    buttonText.text = "Replay";
+                    break;
+                case buttons.goToMainMenu:
+                    buttonText.text = "Main Menu";
                     break;
                 default:
                     Debug.Log("default");
@@ -183,6 +194,15 @@ public class ButtonInteraction : MonoBehaviour
                 break;
             case buttons.levelOne:
                 SceneManager.LoadScene(LEVEL_ONE_PATH);
+                break;
+            case buttons.replayLevel:
+                smScript.activateScreen(screens.gameplayScreen);
+                smScript.deactivateScreen(screens.victoryScreen);
+                pmScript.respawn();
+                //SceneManager.LoadScene(LEVEL_ONE_PATH); //This should most likely do something else... need to test (dont want it to load level every time)
+                break;
+            case buttons.goToMainMenu:
+                SceneManager.LoadScene(MAIN_MENU_PATH);
                 break;
             default:
                 break;

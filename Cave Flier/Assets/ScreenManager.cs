@@ -70,6 +70,8 @@ public class ScreenManager : MonoBehaviour {
     private const string TUTORIAL_BUTTON_NAME = "TutorialBtn";
     private const string LEVEL_SELECT_BUTTON_NAME = "LevelSelectBtn";
     private const string LEVEL_ONE_BUTTON_NAME = "LevelOneBtn";
+    private const string REPLAY_LEVEL_BUTTON_NAME = "ReplayBtn";
+    private const string MAIN_MENU_BUTTON_NAME = "MainMenuBtn";
 
     private const string MAIN_MENU_LAYER = "Main Menu Layer";
     private const string LEVEL_SELECT_LAYER = "Level Select Layer";
@@ -158,12 +160,15 @@ public class ScreenManager : MonoBehaviour {
                 if (gameplayScrn != null)
                 {
                     cameraPosition.transform.position = gameplayScrn.transform.GetChild(2).transform.position;
+                    cameraPosition.transform.localPosition = new Vector3(0, 0, 1);
                     activateVisibleLayer(GAMEPLAY_LAYER);
                 }
                 break;
             case screens.victoryScreen:
                 if (victoryScrn != null)
                 {
+                    victoryScrn.transform.GetChild(1).transform.Find(REPLAY_LEVEL_BUTTON_NAME).GetComponent<ButtonInteraction>().isActive = true;
+                    victoryScrn.transform.GetChild(1).transform.Find(MAIN_MENU_BUTTON_NAME).GetComponent<ButtonInteraction>().isActive = true;
                     cameraPosition.transform.position = victoryScrn.transform.GetChild(2).transform.position;
                     activateVisibleLayer(VICTORY_LAYER);
                 }
@@ -228,6 +233,8 @@ public class ScreenManager : MonoBehaviour {
             case screens.victoryScreen:
                 if (victoryScrn != null)
                 {
+                    victoryScrn.transform.GetChild(1).transform.Find(REPLAY_LEVEL_BUTTON_NAME).GetComponent<ButtonInteraction>().isActive = false;
+                    victoryScrn.transform.GetChild(1).transform.Find(MAIN_MENU_BUTTON_NAME).GetComponent<ButtonInteraction>().isActive = false;
                     deactivateVisibleLayer(VICTORY_LAYER);
                 }
                 break;

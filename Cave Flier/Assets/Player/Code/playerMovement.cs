@@ -66,6 +66,7 @@ public class playerMovement : MonoBehaviour
     private Vector3 endObject;
     private Matrix4x4 calibrationMatrix;
     private Vector3 wantedDeadZone = Vector3.zero;
+    private ScreenManager smScript;
 
     [SerializeField] private float invincCounter = 0;
 
@@ -93,6 +94,7 @@ public class playerMovement : MonoBehaviour
         speedMax = speedLevelMax;
 
         playerHealth = startHealth;
+        smScript = (ScreenManager)GameObject.Find("Screen Manager").GetComponent(typeof(ScreenManager));
 
         Debug.Log(transform.forward);
     }
@@ -326,8 +328,10 @@ public class playerMovement : MonoBehaviour
             case PlayerState.damaged:
                 break;
             case PlayerState.dead:
-                respawn();
-                state = PlayerState.active;
+                smScript.activateScreen(screens.victoryScreen);
+                smScript.deactivateScreen(screens.gameplayScreen);
+                //respawn();
+                //state = PlayerState.active;
                 break;
             case PlayerState.victory:
                 break;
