@@ -42,13 +42,13 @@ public class LevelLoader : MonoBehaviour {
 	// total amount of obstacles to be rendered in the level
 	private int totalObstacles;
 
+	// holds the start of a section and the size of the section
 	private float sectionStart;
 	private float sectionSize;
 
 	// game objects for the level, obstacles
 	private GameObject level;
 	private GameObject obstacle;
-	private GameObject consumable;
 
 	// List to hold array of obstacles and consumables
 	private List<GameObject> obstacleList = new List<GameObject>();
@@ -58,6 +58,7 @@ public class LevelLoader : MonoBehaviour {
 	public GameObject column;
 	public GameObject stalactite;
 	public GameObject stalagmite;
+	public GameObject consumable;
 
 	// variables to allow user to set
 	public int obstaclesPerSection;
@@ -88,7 +89,7 @@ public class LevelLoader : MonoBehaviour {
  	**********************************************************************************/
 	void Start () 
 	{
-		level = GameObject.Find ("LevelBoundingBox"); // set level object
+		level = GameObject.Find ("ObstacleGen"); // set level object
 		setLevelProperties(); // instantiate variables
 		totalObstacles = obstaclesPerSection * numberOfSections;
 
@@ -176,6 +177,15 @@ public class LevelLoader : MonoBehaviour {
 	}
 
 
+	private void setColumnRotation()
+	{
+		int rotation; // random number to set rotation degree
+
+		rotation = Random.Range (-10, 10);
+
+	}
+
+
 	/**********************************************************************************
 	 * Function: generateObstacles ()
 	 * 
@@ -198,30 +208,27 @@ public class LevelLoader : MonoBehaviour {
 			switch (obstacleChooser)
 			{
 			case STALACTITE:
-				//obstacle = GameObject.CreatePrimitive (PrimitiveType.Cube); // create cube
-				//obstacle.GetComponent<Renderer> ().material.color = Color.red; // set color
-				//obstacleList.Add (obstacle); // add to array
 				obstacleList.Add (Instantiate (stalactite.gameObject) as GameObject);
+				obstacleList [i].name = "StalactiteObst";
 				//Debug.Log (stalactite.name);
 				break;
 
 			case STALAGMITE:
-				//obstacle = GameObject.CreatePrimitive (PrimitiveType.Cube); // create cube
-				//obstacle.GetComponent<Renderer>().material.color = Color.blue; // set color
-				//obstacleList.Add (obstacle); // add to array
 				obstacleList.Add(Instantiate(stalagmite.gameObject) as GameObject);
+				obstacleList [i].name = "StalagmiteObst";
 				//Debug.Log (stalagmite.name);
 				break; 	
 
 			case COLUMN:
-				//obstacle = GameObject.CreatePrimitive (PrimitiveType.Cube); // create cube
-				//obstacle.GetComponent<Renderer>().material.color = Color.green; // set color
-				//obstacleList.Add (obstacle); // add to array
-				obstacleList.Add(Instantiate(column.gameObject) as GameObject);
+				obstacleList.Add (Instantiate (column.gameObject) as GameObject);
 				obstacleList [i].transform.localScale = new Vector3 (columnScaleX, columnScaleY, columnScaleZ);
+				obstacleList [i].transform.Rotate (0, 0, 0);
+				obstacleList [i].name = "ColumnObst";
 				//Debug.Log (column.name);
 				break;
 			}
+
+			obstacleList [i].tag = "Obstacle";
 		}
 	}
 
@@ -248,19 +255,18 @@ public class LevelLoader : MonoBehaviour {
 			switch (consumableChooser)
 			{
 			case BOOST:
-				consumable = GameObject.CreatePrimitive (PrimitiveType.Sphere); // create sphere
-				consumable.GetComponent<Renderer> ().material.color = Color.yellow; // set color
-				consumable.transform.localScale = new Vector3 (3,3, 3); // scale object
-				consumableList.Add (consumable); // add to array
+				consumableList.Add(Instantiate(consumable.gameObject) as GameObject);
+				consumableList[i].transform.GetChild(0).GetComponent<Renderer> ().material.color = Color.yellow; // set color
+				consumableList[i].name = "boost";
 				break;
 
 			case BRAKE:
-				consumable = GameObject.CreatePrimitive (PrimitiveType.Sphere); // create sphere
-				consumable.GetComponent<Renderer> ().material.color = Color.cyan; // set color
-				consumable.transform.localScale = new Vector3 (3,3, 3); // scale object
-				consumableList.Add (consumable); // add to array
+				consumableList.Add(Instantiate(consumable.gameObject) as GameObject);
+				consumableList[i].transform.GetChild(0).GetComponent<Renderer> ().material.color = Color.cyan; // set color
+				consumableList[i].name = "brake";
 				break;
 			}
+			consumableList[i].tag = "Consumable";
 		}
 	}
 
@@ -409,11 +415,11 @@ public class LevelLoader : MonoBehaviour {
 	private void setObstacleYCoord(GameObject obstacle)
 	{
 		// check what obstacles was passed in
-		if (string.Equals(obstacle.name , "StalactiteObst(Clone)")) // if obstacle is stalagtite
+		if (string.Equals(obstacle.name , "StalactiteObst")) // if obstacle is stalagtite
 		{
 			obstacleY = topWallY; // set y coord to the top wall
 		} 
-		else if (obstacle.name == "StalagmiteObst(Clone)") //if obstacle is stalagmite
+		else if (obstacle.name == "StalagmiteObst") //if obstacle is stalagmite
 		{
 			obstacleY = bottomWallY; // set y coord to bottom wall
 		} 
@@ -442,7 +448,7 @@ public class LevelLoader : MonoBehaviour {
 		float scaleY = Random.Range (obstMinScale, obstMaxScale);
 
 		// check if obstacle is NOT a column (checking for stalactite or stalagmite)
-		if (obstacle.name != "ColumnObst(Clone)") // if obstacle is stalagtite
+		if (obstacle.name != "ColumnObst") // if obstacle is stalagtite
 		{
 			obstacle.transform.localScale = new Vector3 (1, scaleY, 1); // scale obstacle
 		} 
