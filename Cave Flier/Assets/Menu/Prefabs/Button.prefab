@@ -248,6 +248,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gazeTime: 2
   button: 0
+  isActive: 1
 --- !u!114 &114740964493659818
 MonoBehaviour:
   m_ObjectHideFlags: 1
