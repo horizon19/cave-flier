@@ -56,6 +56,7 @@ public class playerMovement : MonoBehaviour
     public float speedLevelMax = 17;
     public float speedMin = 10; 
     public float speedMax;
+    public float consumableSpeedDif = 5;
     public String endObjectName = "wallEnd";
     public float maxTurn;
     
@@ -66,7 +67,8 @@ public class playerMovement : MonoBehaviour
     private Vector3 endObject;
     private Matrix4x4 calibrationMatrix;
     private Vector3 wantedDeadZone = Vector3.zero;
-
+    
+    
     [SerializeField] private float invincCounter = 0;
 
     /**
@@ -171,6 +173,7 @@ public class playerMovement : MonoBehaviour
     * Description:
     *                   Updates the object's physics and positioning before rendering.
     *
+
     * Revisions:        Aing Ragunathan (May 15, 2017) - Restricted turning according to input
     *                   Aing Ragunathan (May 16, 2017) - Updated restrictions check forward angle with Vector angles instead
     */
@@ -179,22 +182,10 @@ public class playerMovement : MonoBehaviour
         float deltaRotation;
         Vector3 deltaCrossProduct;
 
-        //currentAcceleration = Input.acceleration;
-
         deltaRotation = Vector3.Angle(transform.forward, startRotation);    //get the difference in angle between the current and starting angles
         deltaCrossProduct = Vector3.Cross(transform.forward, startRotation);    //get the direction of turning
-        
         transform.Translate(Vector3.forward * Time.deltaTime * speed);  //move the player forward 
-        
-
-        //camDirection = new Vector3(1, 0, 1);
-        //camDirection = Camera.main.transform.TransformDirection(camDirection);
-
-        //Vector3 targetDirection = new Vector3(1f, 0f, 1f);
-        //targetDirection = Camera.main.transform.TransformDirection(targetDirection);
-        //targetDirection.y = 0.0f;
-
-
+    
         //normal movement
         if (deltaRotation < maxTurn)// && deltaCrossProduct.y > 0 && Input.acceleration.z < 0)
         {
@@ -213,17 +204,15 @@ public class playerMovement : MonoBehaviour
         }
         //restriction for turning up
         else if (deltaCrossProduct.x > 0 && Input.acceleration.z < 0)
-        {
+
+       {
             moveY();
         }
         //restriction for turning down
         else if (deltaCrossProduct.x < 0 && Input.acceleration.z > 0)
         {
             moveY();
-        }
-
-        //rotate so the character stays parallel to the floor
-        
+        }        
     }
 
     /**
@@ -282,6 +271,30 @@ public class playerMovement : MonoBehaviour
     }
 
     /**
+    * Date:             May 17, 2017
+    * Author:           Aing Ragunathan
+    * Interface:        void boostSpeed()
+    * Description:
+    *                   Updates the max speed of the player when a boost consumabled is obtained.
+    */
+    public void consume(GameObject consumable)
+    {
+        switch(consumable.name)
+        {
+            case "boost":
+                speedMax += consumableSpeedDif;
+                Debug.Log("boost");
+                break;
+            case "brake":
+                speedMax -= consumableSpeedDif;
+                Debug.Log("brake");
+                break;
+        }
+
+        consumable.GetComponent<SphereCollider>().enabled = false; //disable the consumable object
+    }
+    
+    /**
     * Date:             May 2, 2017
     * Author:           Alex Zielinski
     * Interface:        void OnCollisionEnter ()
@@ -304,8 +317,6 @@ public class playerMovement : MonoBehaviour
             calibrateAccelerometer(); //re-calibrate accelerometer after death to prevent 
         }
     }
-
-
 
     /**
     * Date:             May 10, 2017
@@ -435,4 +446,5 @@ public class playerMovement : MonoBehaviour
         speedMax = speedLevelMax;   //reset the max potential speed
         setPlayerState(PlayerState.active); //reset the player to an alive state again
     }
+
 }
