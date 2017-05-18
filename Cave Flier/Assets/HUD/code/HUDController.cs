@@ -32,20 +32,20 @@ public class HUDController : MonoBehaviour
     //player script for future reference.
     private playerMovement pmScript;
 
-	// Use this for initialization
-	void Start ()
+    // Use this for initialization
+    void Start()
     {
         //we get the playerMovement script instance
         pmScript = (playerMovement)GameObject.FindWithTag("Player").transform.GetChild(0).gameObject.GetComponent(typeof(playerMovement));
 
         //if we don't have an attached canvas, fix that
-        if(canvas == null)
+        if (canvas == null)
         {
             canvas = this.GetComponent<Canvas>();
         }
 
         //if we don't have an attached healthText, fix that
-        if(healthText == null)
+        if (healthText == null)
         {
             healthText = canvas.transform.GetChild(0).GetComponent<Text>();
         }
@@ -59,7 +59,7 @@ public class HUDController : MonoBehaviour
         //if we don't have an attached timerText, fix that
         if (timerText == null)
         {
-           timerText = canvas.transform.GetChild(2).GetComponent<Text>();
+            timerText = canvas.transform.GetChild(2).GetComponent<Text>();
         }
 
         //set the initial points and health

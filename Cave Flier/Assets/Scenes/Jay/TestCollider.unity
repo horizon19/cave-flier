@@ -138,11 +138,11 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4645432948090982, guid: 5e69725629fb8d34b80394e97324a185, type: 2}
       propertyPath: m_LocalPosition.y
-      value: 17.436216
+      value: -14.5
       objectReference: {fileID: 0}
     - target: {fileID: 4645432948090982, guid: 5e69725629fb8d34b80394e97324a185, type: 2}
       propertyPath: m_LocalPosition.z
-      value: -46.087795
+      value: 54.6
       objectReference: {fileID: 0}
     - target: {fileID: 4645432948090982, guid: 5e69725629fb8d34b80394e97324a185, type: 2}
       propertyPath: m_LocalRotation.x
@@ -551,6 +551,7 @@ MonoBehaviour:
   speedLevelMax: 17
   speedMin: 10
   speedMax: 17
+  consumableSpeedDif: 5
   endObjectName: wallEnd
   maxTurn: 80
   invincCounter: 0
@@ -679,11 +680,11 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4645432948090982, guid: 5e69725629fb8d34b80394e97324a185, type: 2}
       propertyPath: m_LocalPosition.y
-      value: 17.2
+      value: -11.8
       objectReference: {fileID: 0}
     - target: {fileID: 4645432948090982, guid: 5e69725629fb8d34b80394e97324a185, type: 2}
       propertyPath: m_LocalPosition.z
-      value: -18.8
+      value: 98.1
       objectReference: {fileID: 0}
     - target: {fileID: 4645432948090982, guid: 5e69725629fb8d34b80394e97324a185, type: 2}
       propertyPath: m_LocalRotation.x
@@ -1287,6 +1288,7 @@ MonoBehaviour:
   headOnRange: 5.04
   debug: 1
   collidedObjects: []
+  collidedNames: []
   collisions: []
   collisionAngles: []
   collidedMinDistances: []
