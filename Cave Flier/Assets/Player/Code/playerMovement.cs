@@ -52,6 +52,7 @@ public class playerMovement : MonoBehaviour
     public int startHealth = 3;
     public int playerHealth;
     public int invincTimer = 5;
+    public int playerPoints = 0;
     public float currentSpeed;
     public float speedLevelMax = 17;
     public float speedMin = 10; 
@@ -67,6 +68,7 @@ public class playerMovement : MonoBehaviour
     private Matrix4x4 calibrationMatrix;
     private Vector3 wantedDeadZone = Vector3.zero;
     private HUDController hudScript;
+    private collisionDetection cdScript;
 
     [SerializeField] private float invincCounter = 0;
 
@@ -82,6 +84,7 @@ public class playerMovement : MonoBehaviour
     private void Start()
     {
         hudScript = this.transform.GetChild(2).transform.GetChild(0).GetComponent<HUDController>();
+        cdScript = this.transform.GetChild(3).transform.GetChild(0).GetComponent<collisionDetection>();
         Rigidbody rigidbody = GetComponent<Rigidbody>();    //get the physics of the object
         rigidbody.freezeRotation = true;    //stop the object from rotating
 
@@ -433,11 +436,52 @@ public class playerMovement : MonoBehaviour
     */
     public void respawn()
     {
+        cdScript.purgeCollisions();
         playerHealth = startHealth; //reset the player's health
         hudScript.updatePlayerHealth(playerHealth);
+        setPoints(0);//reset the players points
+        hudScript.updatePlayerPoints(getPoints());
         transform.position = startPosition; //reset the player's location
         transform.localEulerAngles = startRotation; //reset the player's rotation angles
         speedMax = speedLevelMax;   //reset the max potential speed
         setPlayerState(PlayerState.active); //reset the player to an alive state again
+    }
+
+    /**
+    * Date:             May 17, 2017
+    * Author:           Jay Coughlan
+    * Interface:        void addPoints (int mult = 1)
+    * Description:
+    *                   Adds points to the player score based on the input multiplyer. The default
+    *                   for the multiplyer is 1, giving the player 10 points. This also calls the HUD to update.
+    */
+    public void addPoints(int mult = 1)
+    {
+        playerPoints += 10 * mult;
+        hudScript.updatePlayerPoints(playerPoints);
+    }
+
+    /**
+    * Date:             May 17, 2017
+    * Author:           Jay Coughlan
+    * Interface:        int getPoints()
+    * Description:
+    *                   Returns the current points the player has.
+    */
+    public int getPoints()
+    {
+        return playerPoints;
+    }
+
+    /**
+    * Date:             May 17, 2017
+    * Author:           Jay Coughlan
+    * Interface:        void setPoints()
+    * Description:
+    *                   set's the player's points to the specified amount
+    */
+    public void setPoints(int points)
+    {
+        playerPoints = points;
     }
 }

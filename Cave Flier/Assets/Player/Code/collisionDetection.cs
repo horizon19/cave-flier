@@ -150,6 +150,10 @@ public class collisionDetection : MonoBehaviour
                     //you ded son
                     pmScript.lowerHealth(pmScript.getHealth());
                     break;
+                case "Start Volume":
+                    break;
+                case "End Volume":
+                    break;
                 default:
                     //if we hit anything that's not walls, the entrance, or an obstacle, turn it yellow, but continue.
                     if (debug)
@@ -313,6 +317,10 @@ public class collisionDetection : MonoBehaviour
                 break;
             case "Player":
                 break;
+            case "Start Volume":
+                break;
+            case "End Volume":
+                break;
             default:
                 break;
         }
@@ -340,8 +348,6 @@ public class collisionDetection : MonoBehaviour
             case "Entrance":
             //we want entrance to fall through to obstacles because the behavior is the same
             case "Walls":
-            //we want walls to fall through to obstacles because the behavior is precisely the same.
-            case "Obstacle":
                 if (collidedObjects.Contains(go))//we want to make sure this object wasn't, by some miracle, removed from the list prematurely
                 {
                     //first get the objects index
@@ -378,6 +384,46 @@ public class collisionDetection : MonoBehaviour
                     collidedObjects.Remove(go);
                 }
                 break;
+            case "Obstacle":
+                if (collidedObjects.Contains(go))//we want to make sure this object wasn't, by some miracle, removed from the list prematurely
+                {
+                    //first get the objects index
+                    index = collidedObjects.IndexOf(go);
+
+                    //here we decide what we want to do when the object leaves the area
+                    if (collidedMinDistances[index] < min)
+                    {
+                        //within the bounds of our innermost layer. Likely we should not hit this either, as a death should be dealt with in the update loop
+                    }
+                    else if (collidedMinDistances[index] > min && collidedMinDistances[index] < layer2)
+                    {
+                        //second most inner layer, many many points
+                        pmScript.addPoints(3);
+                    }
+                    else if (collidedMinDistances[index] > layer2 && collidedMinDistances[index] < layer3)
+                    {
+                        //third most inner layer, some points maybe?
+                        pmScript.addPoints(2);
+                    }
+                    else if (collidedMinDistances[index] > layer3 && collidedMinDistances[index] < max)
+                    {
+                        //if it is within the bounds of our outer layer
+                        pmScript.addPoints();
+                    }
+                    else
+                    {
+                        //this statement is here just in case, but should never be encountered since the distance would have to be larger than the collider
+                    }
+
+                    //now we remove it's distance
+                    collidedMinDistances.RemoveAt(index);
+                    collisions.RemoveAt(index);
+                    collisionAngles.RemoveAt(index);
+                    //collidedNames.RemoveAt(index);
+                    //now we remove the object from the list
+                    collidedObjects.Remove(go);
+                }
+                break;
             case "Consumable":
                 if (collidedObjects.Contains(go))//we want to make sure this object wasn't, by some miracle, removed from the list prematurely
                 {
@@ -394,6 +440,10 @@ public class collisionDetection : MonoBehaviour
                 }
                 break;
             case "Player":
+                break;
+            case "Start Volume":
+                break;
+            case "End Volume":
                 break;
             default:
                 break;
@@ -457,6 +507,10 @@ public class collisionDetection : MonoBehaviour
                 break;
             case "Player":
                 break;
+            case "Start Volume":
+                break;
+            case "End Volume":
+                break;
             default:
                 break;
         }
@@ -466,13 +520,13 @@ public class collisionDetection : MonoBehaviour
 
 
     /**
-* Date:             May 15, 2017
-* Author:           Jay Coughlan
-* Interface:        void calcCollisionAngle(Vector3 onj)
-* Description:      This is a wrapper around the basic Vector3.Angle function with the purpose of keeping the math consistant
-*                   throughout the script. I want to make sure I'm using vectors of the correct directions in all instances.
-*                   
-*/
+    * Date:             May 15, 2017
+    * Author:           Jay Coughlan
+    * Interface:        void calcCollisionAngle(Vector3 onj)
+    * Description:      This is a wrapper around the basic Vector3.Angle function with the purpose of keeping the math consistant
+    *                   throughout the script. I want to make sure I'm using vectors of the correct directions in all instances.
+    *                   
+    */
     private float calcCollisionAngle(Vector3 obj)
     {
         float angle = 0;
@@ -482,4 +536,25 @@ public class collisionDetection : MonoBehaviour
         return angle;
     }
 
+    /**
+    * Date:             May 15, 2017
+    * Author:           Jay Coughlan
+    * Interface:        void purgeCollissions()
+    * Description:      This empties out all of our collisions so we don't act upon old data when we restart
+    *                   
+    */
+    public void purgeCollisions()
+    {
+        //purge all obstacles
+        collidedObjects.Clear();
+        collidedMinDistances.Clear();
+        collisions.Clear();
+        collisionAngles.Clear();
+
+        //purge all consumables
+        consumedAngles.Clear();
+        consumedCollisions.Clear();
+        consumedDistances.Clear();
+        consumedObjects.Clear();
+    }
 }
