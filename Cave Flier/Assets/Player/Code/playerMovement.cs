@@ -84,7 +84,7 @@ public class playerMovement : MonoBehaviour
 */
     private void Start()
     {
-        hudScript = this.transform.GetChild(2).transform.GetChild(0).GetComponent<HUDController>();
+		hudScript = this.transform.GetChild(2).transform.GetChild(0).transform.GetChild(0).GetComponent<HUDController>();
         cdScript = this.transform.GetChild(3).transform.GetChild(0).GetComponent<collisionDetection>();
         Rigidbody rigidbody = GetComponent<Rigidbody>();    //get the physics of the object
         rigidbody.freezeRotation = true;    //stop the object from rotating
