@@ -485,6 +485,18 @@ Prefab:
       propertyPath: m_LocalScale.z
       value: 14
       objectReference: {fileID: 0}
+    - target: {fileID: 1998668196417260, guid: 8b0a0b53468c08842811dac0acde5dfd, type: 2}
+      propertyPath: m_Name
+      value: Left Arm
+      objectReference: {fileID: 0}
+    - target: {fileID: 1700045194568140, guid: 8b0a0b53468c08842811dac0acde5dfd, type: 2}
+      propertyPath: m_Name
+      value: Right Arm
+      objectReference: {fileID: 0}
+    - target: {fileID: 1974693928460708, guid: 8b0a0b53468c08842811dac0acde5dfd, type: 2}
+      propertyPath: m_Name
+      value: Torso
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 54987652877878316, guid: 8b0a0b53468c08842811dac0acde5dfd, type: 2}
   m_ParentPrefab: {fileID: 100100000, guid: 8b0a0b53468c08842811dac0acde5dfd, type: 2}
