@@ -36,9 +36,9 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1378683552629420}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalRotation: {x: -0, y: 0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 34.74966, z: 396.2143}
+  m_LocalScale: {x: 65.63257, y: 77.300964, z: 766.5367}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -108,13 +108,14 @@ MonoBehaviour:
   column: {fileID: 1147359681221538, guid: 5e69725629fb8d34b80394e97324a185, type: 2}
   stalactite: {fileID: 1968595922399650, guid: 91c02d906850c6b428df37d39ec78062, type: 2}
   stalagmite: {fileID: 1679842201774298, guid: d77fa30ce0e194c478629dbf854c3e78, type: 2}
-  obstaclesPerSection: 0
-  numberOfSections: 0
-  numberOfConsumables: 0
+  consumable: {fileID: 1346507126618608, guid: decf5a172f0963f428a62d1c4a1d2ae2, type: 2}
+  obstaclesPerSection: 10
+  numberOfSections: 10
+  numberOfConsumables: 2
   startBuffer: 0
   consumableBuffer: 0
-  columnScaleX: 0
-  columnScaleY: 0
-  columnScaleZ: 0
-  obstMinScale: 0
-  obstMaxScale: 0
+  columnScaleX: 1
+  columnScaleY: 1
+  columnScaleZ: 1
+  obstMinScale: 1
+  obstMaxScale: 3

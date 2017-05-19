@@ -28,6 +28,7 @@ public class HUDController : MonoBehaviour
     public Text healthText;
     public Text pointText;
     public Text timerText;
+    public Image bloodImg;
 
     //player script for future reference.
     private playerMovement pmScript;
@@ -47,25 +48,55 @@ public class HUDController : MonoBehaviour
         //if we don't have an attached healthText, fix that
         if (healthText == null)
         {
+            Debug.LogWarning("You have no HUDHealth object. We will try and find one.");
             healthText = canvas.transform.GetChild(0).GetComponent<Text>();
+
+            if (timerText == null)
+            {
+                Debug.LogWarning("No healthText could be found. Please attach a HUDHealth object to this component");
+            }
         }
 
         //if we don't have an attached pointText, fix that
         if (pointText == null)
         {
+            Debug.LogWarning("You have no HUDPoint object. We will try and find one.");
             pointText = canvas.transform.GetChild(1).GetComponent<Text>();
+            if (timerText == null)
+            {
+                Debug.LogWarning("No pointText could be found. Please attach a HUDPoint object to this component");
+            }
         }
 
         //if we don't have an attached timerText, fix that
         if (timerText == null)
         {
+            Debug.LogWarning("You have no HUDTime object. We will try and find one.");
             timerText = canvas.transform.GetChild(2).GetComponent<Text>();
+
+            if (timerText == null)
+            {
+                Debug.LogWarning("No timerText could be found. Please attach a HUDText object to this component");
+            }
+        }
+
+        //if we don't have an attached bloodImage
+        if(bloodImg == null)
+        {
+            Debug.LogWarning("You have no HUDBlood object. We will try and find one.");
+            bloodImg = canvas.transform.GetChild(3).GetComponent<Image>();
+
+            if(bloodImg == null)
+            {
+                Debug.LogWarning("No bloodImg could be found. Please attach a HUDBlood object to this component");
+            }
         }
 
         //set the initial points and health
         healthText.text = "Health: " + pmScript.getHealth();
         pointText.text = "Score: " + pmScript.getPoints();
         timerText.text = "Time: 0";
+        bloodImg.GetComponent<CanvasRenderer>().SetAlpha(0);
     }
 
     /**
@@ -102,5 +133,21 @@ public class HUDController : MonoBehaviour
     public void updatePlayerTime(float time)
     {
         pointText.text = "Time: " + time;
+    }
+
+    /**
+    * Date:             May 17, 2017
+    * Author:           Jay Coughlan
+    * Interface:        void throwBloodSplatter(float time)
+    * Description:
+    *                   This tells the hud bloodsplatter Image to lerp between 1 and 0 fr it's alpha channel.
+    *                   Time is how long we want it to take. generall invinciTimer
+    */
+    public void throwBloodSplatter(float time)
+    {
+        //set alpha to 1 for that sudden "AH!"
+        bloodImg.GetComponent<CanvasRenderer>().SetAlpha(1f);
+        //now we make it lerp. really it's that simple
+        bloodImg.CrossFadeAlpha(0, time, true);
     }
 }
