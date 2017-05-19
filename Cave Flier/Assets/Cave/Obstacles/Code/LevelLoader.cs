@@ -6,7 +6,7 @@ public class LevelLoader : MonoBehaviour {
 
 	// constant values for obstacles
 	private const int OBSTACLE_TYPES = 3;
-	private const int STALAGTITE = 0;
+	private const int STALACTITE = 0;
 	private const int STALAGMITE = 1;
 	private const int COLUMN = 2;
 
@@ -42,17 +42,23 @@ public class LevelLoader : MonoBehaviour {
 	// total amount of obstacles to be rendered in the level
 	private int totalObstacles;
 
+	// holds the start of a section and the size of the section
 	private float sectionStart;
 	private float sectionSize;
 
 	// game objects for the level, obstacles
 	private GameObject level;
 	private GameObject obstacle;
-	private GameObject consumable;
 
 	// List to hold array of obstacles and consumables
 	private List<GameObject> obstacleList = new List<GameObject>();
 	private List<GameObject> consumableList = new List<GameObject>();
+
+	// prefab for users to specify
+	public GameObject column;
+	public GameObject stalactite;
+	public GameObject stalagmite;
+	public GameObject consumable;
 
 	// variables to allow user to set
 	public int obstaclesPerSection;
@@ -60,6 +66,15 @@ public class LevelLoader : MonoBehaviour {
 	public int numberOfConsumables;
 	public int startBuffer; // buffer so obstacles don't spawn immidiatly at start of level
 	public int consumableBuffer; // buffer so consumables don't spawn too close to walls
+
+	// scale values user can set for column 
+	public float columnScaleX;
+	public float columnScaleY;
+	public float columnScaleZ;
+
+	// min and max Y range user can set for stalactites/stalagmites
+	public float obstMinScale;
+	public float obstMaxScale;
 
 
 	/**********************************************************************************
@@ -74,7 +89,7 @@ public class LevelLoader : MonoBehaviour {
  	**********************************************************************************/
 	void Start () 
 	{
-		level = GameObject.Find ("LevelBoundingBox"); // set level object
+		level = GameObject.Find ("ObstacleGen"); // set level object
 		setLevelProperties(); // instantiate variables
 		totalObstacles = obstaclesPerSection * numberOfSections;
 
@@ -144,7 +159,8 @@ public class LevelLoader : MonoBehaviour {
 		sectionSize = lvlLength / numberOfSections;
 		sectionStart = startZ;
 
-		Debug.Log ("Center X: " + lvlCenterX);
+		// for testing
+		/*Debug.Log ("Center X: " + lvlCenterX);
 		Debug.Log ("Center Y: " + lvlCenterY);
 		Debug.Log ("Center Z: " + lvlCenterZ);
 		Debug.Log ("Width: " + lvlWidth);
@@ -157,7 +173,16 @@ public class LevelLoader : MonoBehaviour {
 		Debug.Log ("End wall: " + endZ);
 		Debug.Log ("Start wall: " + startZ);
 		Debug.Log ("Section Size: " + sectionSize);
-		Debug.Log ("Section Start: " + sectionStart);
+		Debug.Log ("Section Start: " + sectionStart); */
+	}
+
+
+	private void setColumnRotation()
+	{
+		int rotation; // random number to set rotation degree
+
+		rotation = Random.Range (-10, 10);
+
 	}
 
 
@@ -182,24 +207,28 @@ public class LevelLoader : MonoBehaviour {
 			// determine what obstacle was generated
 			switch (obstacleChooser)
 			{
-			case STALAGTITE:
-				obstacle = GameObject.CreatePrimitive (PrimitiveType.Cube); // create cube
-				obstacle.GetComponent<Renderer> ().material.color = Color.red; // set color
-				obstacleList.Add (obstacle); // add to array
+			case STALACTITE:
+				obstacleList.Add (Instantiate (stalactite.gameObject) as GameObject);
+				obstacleList [i].name = "StalactiteObst";
+				//Debug.Log (stalactite.name);
 				break;
 
 			case STALAGMITE:
-				obstacle = GameObject.CreatePrimitive (PrimitiveType.Cube); // create cube
-				obstacle.GetComponent<Renderer>().material.color = Color.blue; // set color
-				obstacleList.Add (obstacle); // add to array
+				obstacleList.Add(Instantiate(stalagmite.gameObject) as GameObject);
+				obstacleList [i].name = "StalagmiteObst";
+				//Debug.Log (stalagmite.name);
 				break; 	
 
 			case COLUMN:
-				obstacle = GameObject.CreatePrimitive (PrimitiveType.Cube); // create cube
-				obstacle.GetComponent<Renderer>().material.color = Color.green; // set color
-				obstacleList.Add (obstacle); // add to array
+				obstacleList.Add (Instantiate (column.gameObject) as GameObject);
+				obstacleList [i].transform.localScale = new Vector3 (columnScaleX, columnScaleY, columnScaleZ);
+				obstacleList [i].transform.Rotate (0, 0, 0);
+				obstacleList [i].name = "ColumnObst";
+				//Debug.Log (column.name);
 				break;
 			}
+
+			obstacleList [i].tag = "Obstacle";
 		}
 	}
 
@@ -212,7 +241,7 @@ public class LevelLoader : MonoBehaviour {
 	 * Programmer: Alex Zielinski
 	 * 
 	 * Description:
-	 * 		generate an array of consumables (randomly generate consumables)
+	 * 		generate an array of consumables (randomly generate consumables).
  	**********************************************************************************/
 	private void generateConsumables()
 	{
@@ -226,19 +255,18 @@ public class LevelLoader : MonoBehaviour {
 			switch (consumableChooser)
 			{
 			case BOOST:
-				consumable = GameObject.CreatePrimitive (PrimitiveType.Sphere); // create sphere
-				consumable.GetComponent<Renderer> ().material.color = Color.yellow; // set color
-				consumable.transform.localScale = new Vector3 (3,3, 3); // scale object
-				consumableList.Add (consumable); // add to array
+				consumableList.Add(Instantiate(consumable.gameObject) as GameObject);
+				consumableList[i].transform.GetChild(0).GetComponent<Renderer> ().material.color = Color.yellow; // set color
+				consumableList[i].name = "boost";
 				break;
 
 			case BRAKE:
-				consumable = GameObject.CreatePrimitive (PrimitiveType.Sphere); // create sphere
-				consumable.GetComponent<Renderer> ().material.color = Color.cyan; // set color
-				consumable.transform.localScale = new Vector3 (3,3, 3); // scale object
-				consumableList.Add (consumable); // add to array
+				consumableList.Add(Instantiate(consumable.gameObject) as GameObject);
+				consumableList[i].transform.GetChild(0).GetComponent<Renderer> ().material.color = Color.cyan; // set color
+				consumableList[i].name = "brake";
 				break;
 			}
+			consumableList[i].tag = "Consumable";
 		}
 	}
 
@@ -251,7 +279,7 @@ public class LevelLoader : MonoBehaviour {
 	 * Programmer: Alex Zielinski
 	 * 
 	 * Description:
-	 * 		 Randomly spawns obstacles in tunnel
+	 * 		 Randomly spawns obstacles in tunnel.
 	 **********************************************************************************/
 	private void spawnObstacles()
 	{
@@ -271,9 +299,13 @@ public class LevelLoader : MonoBehaviour {
 				else // spawn normally
 					obstacleZ = Random.Range (sectionStart, sectionStart + sectionSize);
 
-				// generate random X and Y values for obstacle
+				// generate random X coord for obstacle
 				obstacleX = Random.Range (leftWallX + 1, rightWallX - 1);
-				obstacleY = Random.Range (bottomWallY + 1, topWallY - 1);
+
+				// generate Y coord for obstacle
+				//obstacleY = Random.Range (bottomWallY + 1, topWallY - 1);
+				setObstacleYCoord(obstacleList[obstaclePos]);
+				setObstacleYScale(obstacleList[obstaclePos]);
 
 				// position the cube
 				obstacleList[obstaclePos].transform.position = new Vector3 (obstacleX, obstacleY, obstacleZ);
@@ -296,7 +328,9 @@ public class LevelLoader : MonoBehaviour {
 	 * Programmer: Alex Zielinski
 	 * 
 	 * Description:
-	 * 		 Randomly spawns consumables in tunnel
+	 * 		Randomly spawns consumables in tunnel. Checks if generated coordinates
+	 * 		collides with an obstacle. If so then coordinates are generated until 
+	 * 		they are valid.
 	 **********************************************************************************/
 	private void spawnConsumable()
 	{
@@ -316,9 +350,10 @@ public class LevelLoader : MonoBehaviour {
 			// check if consumable is to spawn in current section
 			if ((toSpawn == 0 || consumablesLeft == sectionsLeft) && consumablesLeft != 0)
 			{
-				while (collides == true)
+				do // keep looping until valid coordinates are generated
 				{
 					collides = false;
+
 					// generate consumable coords that don't collide with obstacle
 					for (int i = obstaclePos; i < (obstaclePos + obstaclesPerSection); i++)
 					{
@@ -327,21 +362,22 @@ public class LevelLoader : MonoBehaviour {
 							// include buffer so no obstacles spawn at start of level
 							cnsmbleZ = Random.Range (sectionStart + startBuffer, sectionStart + sectionSize);
 						else // spawn normally
-							cnsmbleZ= Random.Range (sectionStart, sectionStart + sectionSize);
+							cnsmbleZ = Random.Range (sectionStart, sectionStart + sectionSize);
 						
 						// randomly generate X coordinates
 						cnsmbleX = Random.Range (leftWallX + consumableBuffer, rightWallX - consumableBuffer);
 
 						// check for collision (x, y coords of consumable and all obstacles in section)
-						if (Mathf.Abs(cnsmbleX - obstacleList [i].transform.position.x) <= 2 && 
-							Mathf.Abs(cnsmbleZ - obstacleList [i].transform.position.z) <= 2)
+						if (Mathf.Abs (cnsmbleX - obstacleList [i].transform.position.x) <= 6 &&
+						    Mathf.Abs (cnsmbleZ - obstacleList [i].transform.position.z) <= 6)
 						{
-							collides = true;
-							Debug.Log("----------------HIT");
+							collides = true; // collision detected
+							//Debug.Log ("----------------HIT"); // for testing
 						}
 					}
-				}
-				Debug.Log ("---GOOD SPAWN");
+				} while (collides == true);
+
+				//Debug.Log ("---GOOD SPAWN"); // for testing
 
 				// randomly generate Y coordinates
 				cnsmbleY = Random.Range (bottomWallY + consumableBuffer, topWallY - consumableBuffer);
@@ -353,12 +389,68 @@ public class LevelLoader : MonoBehaviour {
 				collides = true;
 			}
 
-			obstaclePos += (obstaclesPerSection - 1);
+			obstaclePos += obstaclesPerSection; // increment the position within obstacle list
 			sectionStart += sectionSize; // increment the start of the next section
 			currSection++; // increment section counter
 			sectionsLeft--; // decrement the amount of sections left
 		}
 
 		sectionStart = startZ; // reset start section
+	}
+
+
+	/**********************************************************************************
+	 * Function: void setObstacleYCoord(GameObject obstacle)
+	 *						GameObject obstacle: obstacle to determine Y coordinate
+	 *
+	 * Date: May 14, 2017
+	 * 
+	 * Programmer: Alex Zielinski
+	 * 
+	 * Description:
+	 * 		Based on the obstacle type passed in the Y coordinate of the obstacle is 
+	 * 		set accordingly
+	 **********************************************************************************/
+	// randomly generate Y coordinates
+	private void setObstacleYCoord(GameObject obstacle)
+	{
+		// check what obstacles was passed in
+		if (string.Equals(obstacle.name , "StalactiteObst")) // if obstacle is stalagtite
+		{
+			obstacleY = topWallY; // set y coord to the top wall
+		} 
+		else if (obstacle.name == "StalagmiteObst") //if obstacle is stalagmite
+		{
+			obstacleY = bottomWallY; // set y coord to bottom wall
+		} 
+		else // if obstacle is coloumn
+		{
+			obstacleY = bottomWallY; // set y coord bottom wall
+		}
+	}
+
+
+	/**********************************************************************************
+	 * Function: void setObstacleYCoord(GameObject obstacle)
+	 *						GameObject obstacle: obstacle to determine Y scale
+	 *
+	 * Date: May 14, 2017
+	 * 
+	 * Programmer: Alex Zielinski
+	 * 
+	 * Description:
+	 * 		Based on the obstacle type passed in the Y scale of the obstacle is 
+	 * 		set accordingly
+	 **********************************************************************************/
+	private void setObstacleYScale(GameObject obstacle)
+	{
+		// randomly generate a scale value
+		float scaleY = Random.Range (obstMinScale, obstMaxScale);
+
+		// check if obstacle is NOT a column (checking for stalactite or stalagmite)
+		if (obstacle.name != "ColumnObst") // if obstacle is stalagtite
+		{
+			obstacle.transform.localScale = new Vector3 (1, scaleY, 1); // scale obstacle
+		} 
 	}
 }
