@@ -60,6 +60,7 @@ public class playerMovement : MonoBehaviour
     public float consumableSpeedDif = 5;
     public String endObjectName = "wallEnd";
     public float maxTurn;
+    public GameObject HUDCanvas;
 
 
     private Vector3 startPosition;
@@ -84,7 +85,24 @@ public class playerMovement : MonoBehaviour
 */
     private void Start()
     {
-		hudScript = this.transform.GetChild(2).transform.GetChild(0).transform.GetChild(0).GetComponent<HUDController>();
+        if (HUDCanvas == null)
+        {
+            Debug.LogWarning("Dude, you didn't attach a HUDCanvas. We will try and find one.");
+            HUDCanvas = GameObject.Find("HUDCanvas");
+            if(HUDCanvas == null)
+            {
+                Debug.LogError("Dude, I couldn't find it. Please attach one.");
+            }
+            else
+            {
+                hudScript = HUDCanvas.GetComponent<HUDController>();
+            }
+        }
+        else
+        {
+            hudScript = HUDCanvas.GetComponent<HUDController>();
+        }
+
         cdScript = this.transform.GetChild(3).transform.GetChild(0).GetComponent<collisionDetection>();
         Rigidbody rigidbody = GetComponent<Rigidbody>();    //get the physics of the object
         rigidbody.freezeRotation = true;    //stop the object from rotating
@@ -339,6 +357,8 @@ public class playerMovement : MonoBehaviour
             case PlayerState.active:
                 break;
             case PlayerState.damaged:
+                //activate the HUD's bloodsplatter effect
+                hudScript.throwBloodSplatter(invincTimer);
                 break;
             case PlayerState.dead:
                 respawn();
