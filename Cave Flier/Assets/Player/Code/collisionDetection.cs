@@ -400,6 +400,7 @@ public class collisionDetection : MonoBehaviour
             case "Start Volume":
                 break;
             case "End Volume":
+                pmScript.setPlayerState(PlayerState.victory);
                 break;
             default:
                 break;
