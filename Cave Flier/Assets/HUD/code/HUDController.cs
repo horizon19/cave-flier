@@ -48,30 +48,55 @@ public class HUDController : MonoBehaviour
         //if we don't have an attached healthText, fix that
         if (healthText == null)
         {
+            Debug.LogWarning("You have no HUDHealth object. We will try and find one.");
             healthText = canvas.transform.GetChild(0).GetComponent<Text>();
+
+            if (timerText == null)
+            {
+                Debug.LogWarning("No healthText could be found. Please attach a HUDHealth object to this component");
+            }
         }
 
         //if we don't have an attached pointText, fix that
         if (pointText == null)
         {
+            Debug.LogWarning("You have no HUDPoint object. We will try and find one.");
             pointText = canvas.transform.GetChild(1).GetComponent<Text>();
+            if (timerText == null)
+            {
+                Debug.LogWarning("No pointText could be found. Please attach a HUDPoint object to this component");
+            }
         }
 
         //if we don't have an attached timerText, fix that
         if (timerText == null)
         {
+            Debug.LogWarning("You have no HUDTime object. We will try and find one.");
             timerText = canvas.transform.GetChild(2).GetComponent<Text>();
+
+            if (timerText == null)
+            {
+                Debug.LogWarning("No timerText could be found. Please attach a HUDText object to this component");
+            }
         }
 
         //if we don't have an attached bloodImage
+        if(bloodImg == null)
         {
+            Debug.LogWarning("You have no HUDBlood object. We will try and find one.");
+            bloodImg = canvas.transform.GetChild(3).GetComponent<Image>();
 
+            if(bloodImg == null)
+            {
+                Debug.LogWarning("No bloodImg could be found. Please attach a HUDBlood object to this component");
+            }
         }
 
         //set the initial points and health
         healthText.text = "Health: " + pmScript.getHealth();
         pointText.text = "Score: " + pmScript.getPoints();
         timerText.text = "Time: 0";
+        bloodImg.GetComponent<CanvasRenderer>().SetAlpha(0);
     }
 
     /**
@@ -108,5 +133,12 @@ public class HUDController : MonoBehaviour
     public void updatePlayerTime(float time)
     {
         pointText.text = "Time: " + time;
+    }
+
+    public void throwBloodSplatter(float time)
+    {
+        bloodImg.GetComponent<CanvasRenderer>().SetAlpha(1f);
+
+        bloodImg.CrossFadeAlpha(0, time, true);
     }
 }
