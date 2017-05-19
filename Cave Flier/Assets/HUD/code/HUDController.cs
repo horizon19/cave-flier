@@ -28,6 +28,7 @@ public class HUDController : MonoBehaviour
     public Text healthText;
     public Text pointText;
     public Text timerText;
+    public Image bloodImg;
 
     //player script for future reference.
     private playerMovement pmScript;
@@ -60,6 +61,11 @@ public class HUDController : MonoBehaviour
         if (timerText == null)
         {
             timerText = canvas.transform.GetChild(2).GetComponent<Text>();
+        }
+
+        //if we don't have an attached bloodImage
+        {
+
         }
 
         //set the initial points and health
