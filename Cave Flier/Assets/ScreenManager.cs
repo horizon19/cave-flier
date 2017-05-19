@@ -61,6 +61,7 @@ public class ScreenManager : MonoBehaviour {
     private Camera camera;
     private Camera cameraLeft; //Google VR camera's left eye camera
     private Camera cameraRight; //Google VR camera's right eye camera
+    private Camera HudCamera;
     private TextMesh scoreText;
     private playerMovement pmScript;
 
@@ -68,6 +69,7 @@ public class ScreenManager : MonoBehaviour {
     private const string MAIN_CAMERA_POSITION_TAG = "MainCameraPos";
     private const string LEFT_EYE_TAG = "LeftEye";
     private const string RIGHT_EYE_TAG = "RightEye";
+    private const string HUD_CAMERA_TAG = "HudCamera";
 
     private const string TUTORIAL_BUTTON_NAME = "TutorialBtn";
     private const string LEVEL_SELECT_BUTTON_NAME = "LevelSelectBtn";
@@ -80,6 +82,7 @@ public class ScreenManager : MonoBehaviour {
     private const string GAMEPLAY_LAYER = "Gameplay Layer";
     private const string VICTORY_LAYER = "Victory Layer";
     private const string DEATH_LAYER = "Death Layer";
+    private const string HUD_LAYER = "HUDLayer";
 
     private const string MAIN_MENU_SCREEN_NAME = "Main Menu";
     private const string LEVEL_SELECT_SCREEN_NAME = "Level Select";
@@ -164,7 +167,10 @@ public class ScreenManager : MonoBehaviour {
                     cameraPosition.transform.position = gameplayScrn.transform.GetChild(2).transform.position;
                     cameraPosition.transform.localPosition = new Vector3(0, 0, 1);
                     camera.transform.Find("GvrReticlePointer").GetComponent<MeshRenderer>().enabled = false;
+                    HudCamera = GameObject.FindWithTag(HUD_CAMERA_TAG).GetComponent<Camera>();
+                    HudCamera.enabled = true;
                     activateVisibleLayer(GAMEPLAY_LAYER);
+                    activateVisibleLayer(HUD_LAYER);
                 }
                 break;
             case screens.victoryScreen:
@@ -236,7 +242,11 @@ public class ScreenManager : MonoBehaviour {
                 if (gameplayScrn != null)
                 {
                     camera.transform.Find("GvrReticlePointer").GetComponent<MeshRenderer>().enabled = true;
+                    HudCamera = GameObject.FindWithTag(HUD_CAMERA_TAG).GetComponent<Camera>();
+                    HudCamera.enabled = false;
                     deactivateVisibleLayer(GAMEPLAY_LAYER);
+                    deactivateVisibleLayer(HUD_LAYER);
+                    
                 }
                 break;
             case screens.victoryScreen:
