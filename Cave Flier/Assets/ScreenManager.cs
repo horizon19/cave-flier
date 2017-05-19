@@ -61,6 +61,8 @@ public class ScreenManager : MonoBehaviour {
     private Camera camera;
     private Camera cameraLeft; //Google VR camera's left eye camera
     private Camera cameraRight; //Google VR camera's right eye camera
+    private TextMesh scoreText;
+    private playerMovement pmScript;
 
     private const string MAIN_CAMERA_TAG = "MainCamera";
     private const string MAIN_CAMERA_POSITION_TAG = "MainCameraPos";
@@ -161,6 +163,7 @@ public class ScreenManager : MonoBehaviour {
                 {
                     cameraPosition.transform.position = gameplayScrn.transform.GetChild(2).transform.position;
                     cameraPosition.transform.localPosition = new Vector3(0, 0, 1);
+                    camera.transform.Find("GvrReticlePointer").GetComponent<MeshRenderer>().enabled = false;
                     activateVisibleLayer(GAMEPLAY_LAYER);
                 }
                 break;
@@ -169,6 +172,11 @@ public class ScreenManager : MonoBehaviour {
                 {
                     victoryScrn.transform.GetChild(1).transform.Find(REPLAY_LEVEL_BUTTON_NAME).GetComponent<ButtonInteraction>().isActive = true;
                     victoryScrn.transform.GetChild(1).transform.Find(MAIN_MENU_BUTTON_NAME).GetComponent<ButtonInteraction>().isActive = true;
+
+                        pmScript = (playerMovement)GameObject.FindWithTag("Player").transform.GetChild(0).gameObject.GetComponent(typeof(playerMovement));
+                        scoreText = victoryScrn.transform.GetChild(0).transform.Find("Front Wall").transform.GetChild(0).transform.GetComponentInChildren(typeof(TextMesh)) as TextMesh;
+                        scoreText.text = "Score: " + pmScript.getPoints();
+
                     cameraPosition.transform.position = victoryScrn.transform.GetChild(2).transform.position;
                     activateVisibleLayer(VICTORY_LAYER);
                 }
@@ -227,6 +235,7 @@ public class ScreenManager : MonoBehaviour {
             case screens.gameplayScreen:
                 if (gameplayScrn != null)
                 {
+                    camera.transform.Find("GvrReticlePointer").GetComponent<MeshRenderer>().enabled = true;
                     deactivateVisibleLayer(GAMEPLAY_LAYER);
                 }
                 break;

@@ -64,7 +64,7 @@ public class ButtonInteraction : MonoBehaviour
     private ScreenManager smScript;
     private playerMovement pmScript;
 
-    private const string LEVEL_ONE_PATH = "Scenes/Jacob/TestCollider";
+    private const string LEVEL_ONE_PATH = "Scenes/Jacob/LevelOne";
     private const string MAIN_MENU_PATH = "Scenes/Jacob/mainMenu";
 
     /**
@@ -201,6 +201,7 @@ public class ButtonInteraction : MonoBehaviour
             case buttons.replayLevel:
                 smScript.activateScreen(screens.gameplayScreen);
                 smScript.deactivateScreen(screens.victoryScreen);
+                smScript.deactivateScreen(screens.deathScreen);
                 pmScript = (playerMovement)GameObject.FindWithTag("Player").transform.GetChild(0).gameObject.GetComponent(typeof(playerMovement));
                 pmScript.respawn();
                 //SceneManager.LoadScene(LEVEL_ONE_PATH); //This should most likely do something else... need to test (dont want it to load level every time)
