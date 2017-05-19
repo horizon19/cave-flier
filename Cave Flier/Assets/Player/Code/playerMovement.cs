@@ -88,7 +88,7 @@ public class playerMovement : MonoBehaviour
         if (HUDCanvas == null)
         {
             Debug.LogWarning("Dude, you didn't attach a HUDCanvas. We will try and find one.");
-            HUDCanvas = this.transform.GetChild(4).gameObject;
+            HUDCanvas = GameObject.Find("HUDCanvas");
             if(HUDCanvas == null)
             {
                 Debug.LogError("Dude, I couldn't find it. Please attach one.");
@@ -357,6 +357,7 @@ public class playerMovement : MonoBehaviour
             case PlayerState.active:
                 break;
             case PlayerState.damaged:
+                //activate the HUD's bloodsplatter effect
                 hudScript.throwBloodSplatter(invincTimer);
                 break;
             case PlayerState.dead:

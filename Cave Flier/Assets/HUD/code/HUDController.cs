@@ -135,10 +135,19 @@ public class HUDController : MonoBehaviour
         pointText.text = "Time: " + time;
     }
 
+    /**
+    * Date:             May 17, 2017
+    * Author:           Jay Coughlan
+    * Interface:        void throwBloodSplatter(float time)
+    * Description:
+    *                   This tells the hud bloodsplatter Image to lerp between 1 and 0 fr it's alpha channel.
+    *                   Time is how long we want it to take. generall invinciTimer
+    */
     public void throwBloodSplatter(float time)
     {
+        //set alpha to 1 for that sudden "AH!"
         bloodImg.GetComponent<CanvasRenderer>().SetAlpha(1f);
-
+        //now we make it lerp. really it's that simple
         bloodImg.CrossFadeAlpha(0, time, true);
     }
 }
