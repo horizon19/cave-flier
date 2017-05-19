@@ -4,4 +4,13 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/Jacob/MainMenu.unity
+    guid: fe414ff17e8a982469e078a602905891
+  - enabled: 1
+    path: Assets/Scenes/Jacob/TestCollider.unity
+    guid: 4b6a5b035961d1848a2d5b712b782c86
+  - enabled: 1
+    path: Assets/Scenes/Jacob/Victory.unity
+    guid: de2a56c41f77c2446b1b93377da93faf

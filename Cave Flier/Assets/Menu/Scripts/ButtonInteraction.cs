@@ -82,7 +82,10 @@ public class ButtonInteraction : MonoBehaviour
         originalprogressBarPosition = progressBar.localPosition;
 
         smScript = (ScreenManager)GameObject.Find("Screen Manager").GetComponent(typeof(ScreenManager));
-        pmScript = (playerMovement)GameObject.FindWithTag("Player").transform.GetChild(0).gameObject.GetComponent(typeof(playerMovement));
+        /*if ((playerMovement)GameObject.FindWithTag("Player").transform.GetChild(0).gameObject.GetComponent(typeof(playerMovement)) != null)
+        {
+            pmScript = (playerMovement)GameObject.FindWithTag("Player").transform.GetChild(0).gameObject.GetComponent(typeof(playerMovement));
+        }*/
 
         if (buttonText != null) //Set the button text if not null
         {
@@ -198,6 +201,7 @@ public class ButtonInteraction : MonoBehaviour
             case buttons.replayLevel:
                 smScript.activateScreen(screens.gameplayScreen);
                 smScript.deactivateScreen(screens.victoryScreen);
+                pmScript = (playerMovement)GameObject.FindWithTag("Player").transform.GetChild(0).gameObject.GetComponent(typeof(playerMovement));
                 pmScript.respawn();
                 //SceneManager.LoadScene(LEVEL_ONE_PATH); //This should most likely do something else... need to test (dont want it to load level every time)
                 break;
