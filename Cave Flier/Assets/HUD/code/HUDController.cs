@@ -132,7 +132,7 @@ public class HUDController : MonoBehaviour
     */
     public void updatePlayerTime(float time)
     {
-        pointText.text = "Time: " + time;
+        timerText.text = "Time: " + time.ToString("0.00");
     }
 
     /**
