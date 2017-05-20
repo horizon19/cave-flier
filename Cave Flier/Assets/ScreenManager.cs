@@ -165,7 +165,7 @@ public class ScreenManager : MonoBehaviour {
                 if (gameplayScrn != null)
                 {
                     cameraPosition.transform.position = gameplayScrn.transform.GetChild(2).transform.position;
-                    cameraPosition.transform.localPosition = new Vector3(0, 0, 1);
+                    cameraPosition.transform.localPosition = new Vector3(0, 0, 0.8f);
                     camera.transform.Find("GvrReticlePointer").GetComponent<MeshRenderer>().enabled = false;
                     HudCamera = GameObject.FindWithTag(HUD_CAMERA_TAG).GetComponent<Camera>();
                     HudCamera.enabled = true;
@@ -181,7 +181,7 @@ public class ScreenManager : MonoBehaviour {
 
                         pmScript = (playerMovement)GameObject.FindWithTag("Player").transform.GetChild(0).gameObject.GetComponent(typeof(playerMovement));
                         scoreText = victoryScrn.transform.GetChild(0).transform.Find("Front Wall").transform.GetChild(0).transform.GetComponentInChildren(typeof(TextMesh)) as TextMesh;
-                        scoreText.text = "Score: " + pmScript.getPoints();
+                        scoreText.text = "Score: " + pmScript.getFinalScore();
 
                     cameraPosition.transform.position = victoryScrn.transform.GetChild(2).transform.position;
                     activateVisibleLayer(VICTORY_LAYER);

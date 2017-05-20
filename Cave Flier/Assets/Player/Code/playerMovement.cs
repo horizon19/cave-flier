@@ -72,6 +72,7 @@ public class playerMovement : MonoBehaviour
 	private ScreenManager smScript;
 	private String endObjectName = "EndVolume";
 	private float totalTime;
+    private bool recordTime = false;
 	
 
     [SerializeField] private float invincCounter = 0;
@@ -106,7 +107,7 @@ public class playerMovement : MonoBehaviour
             hudScript = HUDCanvas.GetComponent<HUDController>();
         }
 
-        cdScript = this.transform.Find("Collider").transform.GetChild(0).GetComponent<collisionDetection>();
+        cdScript = GameObject.Find("Collider").transform.GetChild(0).GetComponent<collisionDetection>();
 		smScript = (ScreenManager)GameObject.Find("Screen Manager").GetComponent(typeof(ScreenManager));
         Rigidbody rigidbody = GetComponent<Rigidbody>();    //get the physics of the object
         rigidbody.freezeRotation = true;    //stop the object from rotating
@@ -119,6 +120,7 @@ public class playerMovement : MonoBehaviour
 		totalTime = 0;
 		playerPoints = 0;
 		finalScore = 0;
+        recordTime = false;
     }
 
     /**
@@ -178,11 +180,19 @@ public class playerMovement : MonoBehaviour
 
            case PlayerState.active:
                 movement(updateSpeed()); //update the player's current position
-				totalTime += Time.deltaTime;	//update the total time
+                if (recordTime)//we only want to record while we're in the level, not approaching or victorying
+                {
+                    totalTime += Time.deltaTime;    //update the total time
+                }
+                hudScript.updatePlayerTime(totalTime);
                 break;
             case PlayerState.damaged:
                 movement(speedMin); //update the player's current position
-                totalTime += Time.deltaTime;	//update the total time
+                if (recordTime)//we only want to record while we're in the level, not approaching or victorying
+                {
+                    totalTime += Time.deltaTime;
+                }
+                hudScript.updatePlayerTime(totalTime);
                 break;
             case PlayerState.dead:
                 break;
@@ -347,6 +357,7 @@ public class playerMovement : MonoBehaviour
         switch (state)
         {
             case PlayerState.pause:
+                recordTime = false;
                 break;
             case PlayerState.active:
                 break;
@@ -357,11 +368,14 @@ public class playerMovement : MonoBehaviour
                 break;
             case PlayerState.dead:
                 smScript.activateScreen(screens.deathScreen);
-                smScript.deactivateScreen(screens.gameplayScreen);                
+                smScript.deactivateScreen(screens.gameplayScreen);
+                recordTime = false;
                 break;
             case PlayerState.victory:
-				smScript.activateScreen(screens.victoryScreen);
+                calcFinalScore();
+                smScript.activateScreen(screens.victoryScreen);
                 smScript.deactivateScreen(screens.gameplayScreen);
+                recordTime = false;
                 break;
         }
 
@@ -428,6 +442,7 @@ public class playerMovement : MonoBehaviour
         transform.position = startPosition; //reset the player's location
         transform.localEulerAngles = startRotation; //reset the player's rotation angles
         speedMax = speedLevelMax;   //reset the max potential speed
+        totalTime = 0;//reset total time
         setPlayerState(PlayerState.active); //reset the player to an alive state again
         totalTime = 0;
     }
@@ -506,4 +521,30 @@ public class playerMovement : MonoBehaviour
 
         return finalScore;
 	}
+
+    /**
+    * Date:             May 19, 2017
+    * Author:           Jay Coughlan
+    * Interface:        void startTimer()
+    * Description:
+    *                   it switches the bool recordTimer to true, which will make it begin recording in fixed update.
+    *                   it also sets the totalTime to 0 since this should only be run when the start volume is hit.
+    */
+    public void startTimer()
+    {
+        totalTime = 0;
+        recordTime = true;
+    }
+
+    /**
+    * Date:             May 19, 2017
+    * Author:           Jay Coughlan
+    * Interface:        void endTimer()
+    * Description:
+    *                   this switches the bool recordTime to false, which stops it from recording.
+    */
+    public void endTimer()
+    {
+        recordTime = false;
+    }
 }

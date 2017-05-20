@@ -23,13 +23,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class collisionDetection : MonoBehaviour
 {
     /**
    * These are the public variables for the code, visible in the editor
    * */
     public GameObject maximumSphere, layer3Sphere, layer2Sphere, minimumSphere; //this is the sphere the player will use to detect collision with an object
-    public float min = 1, layer2 = 4, layer3 = 7, max = 10; //these will hold the minimum and maximum distances from the player to the maximum detecting distance.
+    [SerializeField] public float min = 1, layer2 = 4, layer3 = 7, max = 10; //these will hold the minimum and maximum distances from the player to the maximum detecting distance.
+    
     public float headOnRange = 10;
     //these colours colour the debug line determined by what range the object collided with is in
 
@@ -56,7 +58,7 @@ public class collisionDetection : MonoBehaviour
     /**
 * These are ther private variables you cannot see
 */
-    private float distance = 0, literalHeadOnRange;
+    private float distance = 0, startDist, endDist;
     private Color tmp = Color.black;
     private Vector3 thisPosition, thisForward;
 
@@ -70,6 +72,7 @@ public class collisionDetection : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        Debug.LogWarning("Max: " + max + "\nLayer3: " + layer3 + "\nLayer2: " + layer2 +"\nmin: " + min);
         //make sure this array is empty
         collidedObjects.Clear();
         thisPosition = this.transform.position;
@@ -103,6 +106,7 @@ public class collisionDetection : MonoBehaviour
         //set it's direction
         ray.direction = this.transform.forward;
         // literalHeadOnRange = 180 - headOnRange;
+        Debug.Log("Max: " + max + "\nLayer3: " + layer3 + "\nLayer2: " + layer2 + "\nmin: " + min);
     }
 
     /**
@@ -160,8 +164,10 @@ public class collisionDetection : MonoBehaviour
                     pmScript.lowerHealth(pmScript.getHealth());
                     break;
                 case "Start Volume":
+                    pmScript.startTimer();
                     break;
                 case "End Volume":
+                    pmScript.endTimer();
                     break;
                 default:
                     //if we hit anything that's not walls, the entrance, or an obstacle, turn it yellow, but continue.
@@ -174,6 +180,9 @@ public class collisionDetection : MonoBehaviour
             }
 
         }
+
+        //**************************************************************************//
+        //                     This is Obstacles                                    //
         //for each object we're currently colliding with, we want to check how far away the object is.
         //Depending on what threshold it falls into, we want to do specific defined behaviour 
         for (int index = 0; index < collidedObjects.Count; index++)
@@ -236,7 +245,9 @@ public class collisionDetection : MonoBehaviour
             }
         }
 
-        //for each object we're currently colliding with, we want to check how far away the object is.
+        //**************************************************************************//
+        //                   This is for consumables                                //
+        //for each consumable we're currently colliding with, we want to check how far away the object is.
         //Depending on what threshold it falls into, we want to do specific defined behaviour 
         for (int index = 0; index < consumedObjects.Count; index++)
         {
@@ -600,8 +611,10 @@ public class collisionDetection : MonoBehaviour
             case "Player":
                 break;
             case "Start Volume":
+                startDist = Vector3.Distance(thisPosition, other.ClosestPoint(thisPosition));
                 break;
             case "End Volume":
+                endDist = Vector3.Distance(thisPosition, other.ClosestPoint(thisPosition));
                 break;
             default:
                 break;
