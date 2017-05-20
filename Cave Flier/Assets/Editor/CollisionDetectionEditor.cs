@@ -28,9 +28,28 @@ public class CollisionDetectionEditor : Editor
 {
     //these are the renderer components for the spheres.
     private Renderer maxRend, lay3Rend, lay2Rend, minRend;
-    //this is the debug bool to display
-    private bool myDebug = false;
 
+    //these are the properties we want to serialize and save when we run the code
+    //these are the floats
+    SerializedProperty min, lay2, lay3, max;
+    //these are bools
+    SerializedProperty debug;
+
+    /**
+    * Date:             May 20, 2017
+    * Author:           Jay Coughlan
+    * Description:
+    *                   This function runs the moment the editor exists. 
+    *                   It pulls the values from the script into the editor so they can be saved.
+    */
+    protected virtual void OnEnable()
+    {
+        min = this.serializedObject.FindProperty("min");
+        lay2 = this.serializedObject.FindProperty("layer2");
+        lay3 = this.serializedObject.FindProperty("layer3");
+        max = this.serializedObject.FindProperty("max");
+        debug = this.serializedObject.FindProperty("debug");
+    }
 
     /**
     * Date:             May 16, 2017
@@ -40,51 +59,23 @@ public class CollisionDetectionEditor : Editor
     */
     public override void OnInspectorGUI()
     {
+        this.serializedObject.Update();
         //this is the script we want to modify, we get the version of it we're looking at
         collisionDetection myTarget = (collisionDetection)target;
 
-        //first we reveal the debug toggle for easy debugability
-        myTarget.debug = EditorGUILayout.Toggle("Debug", myTarget.debug);
-
-        //these lines make a field to input the floats for the various distances, then clamps them so they can't be
-        //larger or smaller than each other
-        myTarget.min = EditorGUILayout.FloatField("Innermost Layer", 
-            Mathf.Clamp(myTarget.min, 0, myTarget.layer2 - 0.001f));
-        myTarget.layer2 = EditorGUILayout.FloatField("Second Layer", 
-            Mathf.Clamp(myTarget.layer2, myTarget.min + 0.001f, myTarget.layer3 - 0.001f));
-        myTarget.layer3 = EditorGUILayout.FloatField("Third Layer", 
-            Mathf.Clamp(myTarget.layer3, myTarget.layer2 + 0.001f, myTarget.max - 0.001f));
-        myTarget.max = EditorGUILayout.FloatField("Outermost Layer", 
-            Mathf.Clamp(myTarget.max, myTarget.layer3 + 0.001f, 10000f));
-        myTarget.headOnRange = EditorGUILayout.FloatField("Head On Collision Angle", myTarget.headOnRange);
-
-        //now we check to make sure the sphere has actually changed. If it has, we change sizes. if not, we don't
-        if(myTarget.minimumSphere.transform.localScale.x != myTarget.min * 2)
-        {
-            myTarget.minimumSphere.transform.localScale = new Vector3(myTarget.min * 2, myTarget.min * 2, myTarget.min * 2);
-        }
-        if (myTarget.minimumSphere.transform.localScale.x != myTarget.layer2 * 2)
-        {
-            myTarget.layer2Sphere.transform.localScale = new Vector3(myTarget.layer2 * 2, myTarget.layer2 * 2, myTarget.layer2 * 2);
-        }
-        if (myTarget.layer3Sphere.transform.localScale.x != myTarget.layer3 * 2)
-        {
-            myTarget.layer3Sphere.transform.localScale = new Vector3(myTarget.layer3 * 2, myTarget.layer3 * 2, myTarget.layer3 * 2);
-        }
-        if (myTarget.maximumSphere.transform.localScale.x != myTarget.max * 2)
-        {
-            myTarget.maximumSphere.transform.localScale = new Vector3(myTarget.max * 2, myTarget.max * 2, myTarget.max * 2);
-        }
 
         //now if debug is off, we don't render the spheres at all.
-        if(myTarget.debug != myDebug)
+        EditorGUI.BeginChangeCheck();
+        //first we reveal the debug toggle for easy debugability
+        debug.boolValue = EditorGUILayout.Toggle("Debug", myTarget.debug);
+        if (EditorGUI.EndChangeCheck())
         {
             maxRend = myTarget.maximumSphere.GetComponent<Renderer>();
             lay3Rend = myTarget.layer3Sphere.GetComponent<Renderer>();
             lay2Rend = myTarget.layer2Sphere.GetComponent<Renderer>();
             minRend = myTarget.minimumSphere.GetComponent<Renderer>();
 
-            if (myTarget.debug)
+            if (debug.boolValue)
             {
                 maxRend.enabled = true;
                 lay3Rend.enabled = true;
@@ -98,8 +89,42 @@ public class CollisionDetectionEditor : Editor
                 lay2Rend.enabled = false;
                 minRend.enabled = false;
             }
+        }
 
-            myDebug = myTarget.debug;
+        //these lines make a field to input the floats for the various distances, then clamps them so they can't be
+        //larger or smaller than each other
+        EditorGUI.BeginChangeCheck();//we start listening for a change
+        min.floatValue = EditorGUILayout.FloatField("Innermost Layer",
+            Mathf.Clamp(min.floatValue, 0, myTarget.layer2 - 0.001f));//we apply the new value if it has changed
+        if(EditorGUI.EndChangeCheck())
+        {
+            //if there is a change we change the size of the object.
+            myTarget.minimumSphere.transform.localScale = new Vector3(myTarget.min * 2, myTarget.min * 2, myTarget.min * 2);
+        }
+        //rinse, repeat for layer2
+        EditorGUI.BeginChangeCheck();
+        lay2.floatValue = EditorGUILayout.FloatField("Second Layer", 
+            Mathf.Clamp(myTarget.layer2, myTarget.min + 0.001f, myTarget.layer3 - 0.001f));
+        if(EditorGUI.EndChangeCheck())
+        {
+            myTarget.layer2Sphere.transform.localScale = new Vector3(myTarget.layer2 * 2, myTarget.layer2 * 2, myTarget.layer2 * 2);
+        }
+        //rinse repeat for layer3
+        EditorGUI.BeginChangeCheck();
+        lay3.floatValue = EditorGUILayout.FloatField("Third Layer", 
+            Mathf.Clamp(myTarget.layer3, myTarget.layer2 + 0.001f, myTarget.max - 0.001f));
+        if(EditorGUI.EndChangeCheck())
+        {
+            myTarget.layer3Sphere.transform.localScale = new Vector3(myTarget.layer3 * 2, myTarget.layer3 * 2, myTarget.layer3 * 2);
+        }
+
+        //rinse repeat for the max layer
+        EditorGUI.BeginChangeCheck();
+        max.floatValue = EditorGUILayout.FloatField("Outermost Layer", 
+            Mathf.Clamp(myTarget.max, myTarget.layer3 + 0.001f, 10000f));
+        if(EditorGUI.EndChangeCheck())
+        {
+            myTarget.maximumSphere.transform.localScale = new Vector3(myTarget.max * 2, myTarget.max * 2, myTarget.max * 2);
         }
 
         //this is to reveal the array of obstacles. The label is the title.
@@ -129,6 +154,8 @@ public class CollisionDetectionEditor : Editor
             myTarget.consumedDistances[iii] = EditorGUILayout.FloatField("Distance", myTarget.consumedDistances[iii]);
         }
         EditorGUILayout.EndVertical();//end that vertical as well
+        //EditorUtility.SetDirty(this);
+        this.serializedObject.ApplyModifiedProperties();
     }
 
 
