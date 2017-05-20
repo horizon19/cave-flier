@@ -72,7 +72,6 @@ public class collisionDetection : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        Debug.LogWarning("Max: " + max + "\nLayer3: " + layer3 + "\nLayer2: " + layer2 +"\nmin: " + min);
         //make sure this array is empty
         collidedObjects.Clear();
         thisPosition = this.transform.position;
@@ -105,8 +104,6 @@ public class collisionDetection : MonoBehaviour
         ray.origin = this.transform.position;
         //set it's direction
         ray.direction = this.transform.forward;
-        // literalHeadOnRange = 180 - headOnRange;
-        Debug.Log("Max: " + max + "\nLayer3: " + layer3 + "\nLayer2: " + layer2 + "\nmin: " + min);
     }
 
     /**

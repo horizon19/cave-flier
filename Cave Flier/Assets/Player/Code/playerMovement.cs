@@ -60,7 +60,7 @@ public class playerMovement : MonoBehaviour
     public float speedMax;
     public float maxTurn;
     public GameObject HUDCanvas;
-
+    public Rigidbody rigidbody;
 
     private Vector3 startPosition;
     private Vector3 startRotation;
@@ -109,7 +109,15 @@ public class playerMovement : MonoBehaviour
 
         cdScript = GameObject.Find("Collider").transform.GetChild(0).GetComponent<collisionDetection>();
 		smScript = (ScreenManager)GameObject.Find("Screen Manager").GetComponent(typeof(ScreenManager));
-        Rigidbody rigidbody = GetComponent<Rigidbody>();    //get the physics of the object
+        if (rigidbody == null)
+        {
+            Debug.LogWarning("We have no rigidbody. we will pull one from this object.");
+            rigidbody = GetComponent<Rigidbody>();    //get the physics of the object
+            if(rigidbody == null)
+            {
+                Debug.LogError("The attached object has no rigidbody. PANIC!");
+            }
+        }
         rigidbody.freezeRotation = true;    //stop the object from rotating
         startPosition = transform.position;  //get the starting position
         startRotation = new Vector3(0, 0, 1);//transform.forward; //get the starting angle of rotation
@@ -201,6 +209,7 @@ public class playerMovement : MonoBehaviour
 				
                 break;
         }
+            Debug.Log("Rigidbody forces are " + rigidbody.velocity);
     }
 	
 	/**
@@ -370,22 +379,32 @@ public class playerMovement : MonoBehaviour
                 recordTime = false;
                 break;
             case PlayerState.active:
+                //rigidbody we unfreeze all the constraints, but we want to freeze the rotation again
+                rigidbody.constraints = RigidbodyConstraints.None;
+                rigidbody.freezeRotation = true;
                 break;
             case PlayerState.damaged:
 				speedMax = speedMax - ((speedMax - speedMin) / playerHealth);   //assert that playerHealth is greater than 0
                 //activate the HUD's bloodsplatter effect
                 hudScript.throwBloodSplatter(invincTimer);
+                //rigidbody we unfreeze all the constraints, but we want to freeze the rotation again
+                rigidbody.constraints = RigidbodyConstraints.None;
+                rigidbody.freezeRotation = true;
                 break;
             case PlayerState.dead:
                 smScript.activateScreen(screens.deathScreen);
                 smScript.deactivateScreen(screens.gameplayScreen);
                 recordTime = false;
+                //freeze movement during the menu state
+                rigidbody.constraints = RigidbodyConstraints.FreezePosition;
                 break;
             case PlayerState.victory:
                 calcFinalScore();
                 smScript.activateScreen(screens.victoryScreen);
                 smScript.deactivateScreen(screens.gameplayScreen);
                 recordTime = false;
+                //freeze movement in menu state
+                rigidbody.constraints = RigidbodyConstraints.FreezePosition;
                 break;
         }
 
