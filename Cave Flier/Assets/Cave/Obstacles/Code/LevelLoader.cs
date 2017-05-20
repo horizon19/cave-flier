@@ -58,7 +58,8 @@ public class LevelLoader : MonoBehaviour {
 	public GameObject column;
 	public GameObject stalactite;
 	public GameObject stalagmite;
-	public GameObject consumable;
+	public GameObject consumableBrake;
+	public GameObject consumableBoost;
 
 	// variables to allow user to set
 	public int obstaclesPerSection;
@@ -226,13 +227,13 @@ public class LevelLoader : MonoBehaviour {
 			switch (consumableChooser)
 			{
 			case BOOST:
-				consumableList.Add(Instantiate(consumable.gameObject) as GameObject); // add boost to consumable list
+				consumableList.Add(Instantiate(consumableBoost.gameObject) as GameObject); // add boost to consumable list
 				consumableList[i].transform.GetChild(0).GetComponent<Renderer> ().material.color = Color.blue; // set color
                 consumableList[i].transform.GetChild(0).name = "boost"; // set name
-                break;
+				break;
 
 			case BRAKE:
-				consumableList.Add(Instantiate(consumable.gameObject) as GameObject); // add brake to consumable list
+				consumableList.Add(Instantiate(consumableBrake.gameObject) as GameObject); // add brake to consumable list
 				consumableList[i].transform.GetChild(0).GetComponent<Renderer> ().material.color = Color.red; // set color
                 consumableList[i].transform.GetChild(0).name = "brake"; // set name
                 break;
