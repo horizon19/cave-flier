@@ -257,17 +257,18 @@ public class LevelLoader : MonoBehaviour {
 			case BOOST:
 				consumableList.Add(Instantiate(consumable.gameObject) as GameObject);
 				consumableList[i].transform.GetChild(0).GetComponent<Renderer> ().material.color = Color.yellow; // set color
-				consumableList[i].name = "boost";
-				break;
+                consumableList[i].transform.GetChild(0).name = "boost"; // set name
+                break;
 
 			case BRAKE:
 				consumableList.Add(Instantiate(consumable.gameObject) as GameObject);
 				consumableList[i].transform.GetChild(0).GetComponent<Renderer> ().material.color = Color.cyan; // set color
-				consumableList[i].name = "brake";
-				break;
+                consumableList[i].transform.GetChild(0).name = "brake"; // set name
+                break;
 			}
-			consumableList[i].tag = "Consumable";
-		}
+            consumableList[i].transform.GetChild(0).tag = "Consumable"; // set tag
+            consumableList[i].transform.GetChild(0).transform.localScale = new Vector3(3, 3, 3);
+        }
 	}
 
 

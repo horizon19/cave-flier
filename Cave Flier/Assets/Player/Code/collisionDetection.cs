@@ -400,6 +400,7 @@ public class collisionDetection : MonoBehaviour
             case "Start Volume":
                 break;
             case "End Volume":
+                pmScript.setPlayerState(PlayerState.victory);
                 break;
             default:
                 break;
@@ -536,7 +537,7 @@ public class collisionDetection : MonoBehaviour
         switch (other.tag)
         {
             case "Entrance":
-            //we want entrance to fall through to obstacles as well because the behavior is the same.
+                //we want entrance to fall through to obstacles as well because the behavior is the same.
             case "Walls":
             //we want walls to fall through to obstacles because the behavior is precisely the same.
             case "Obstacle":
