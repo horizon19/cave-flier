@@ -85,13 +85,13 @@ public class LevelLoader : MonoBehaviour {
 	 * Programmer: Alex Zielinski
 	 * 
 	 * Description:
-	 * 		Use this for initialization
+	 * 		Used for inialization
  	**********************************************************************************/
 	void Start () 
 	{
 		level = GameObject.Find ("ObstacleGen"); // set level object
 		setLevelProperties(); // instantiate variables
-		totalObstacles = obstaclesPerSection * numberOfSections;
+		totalObstacles = obstaclesPerSection * numberOfSections; // set total number of obstacles in tunnel
 
 		// generate and spawn obstacles
 		generateObstacles ();
@@ -111,7 +111,7 @@ public class LevelLoader : MonoBehaviour {
 	 * Programmer: Alex Zielinski
 	 * 
 	 * Description:
-	 * 	 Update is called once per frame
+	 * 	 Called once per frame
  	**********************************************************************************/
 	void Update () 
 	{
@@ -158,31 +158,6 @@ public class LevelLoader : MonoBehaviour {
 		// set the section size and the start of the section (start point of tunnel)
 		sectionSize = lvlLength / numberOfSections;
 		sectionStart = startZ;
-
-		// for testing
-		/*Debug.Log ("Center X: " + lvlCenterX);
-		Debug.Log ("Center Y: " + lvlCenterY);
-		Debug.Log ("Center Z: " + lvlCenterZ);
-		Debug.Log ("Width: " + lvlWidth);
-		Debug.Log ("Height: " + lvlHeight);
-		Debug.Log ("Length: " + lvlLength);
-		Debug.Log ("Left wall: " + leftWallX);
-		Debug.Log ("Right wall: " + rightWallX);
-		Debug.Log ("Top wall: " + topWallY);
-		Debug.Log ("Bottom wall: " + bottomWallY);
-		Debug.Log ("End wall: " + endZ);
-		Debug.Log ("Start wall: " + startZ);
-		Debug.Log ("Section Size: " + sectionSize);
-		Debug.Log ("Section Start: " + sectionStart); */
-	}
-
-
-	private void setColumnRotation()
-	{
-		int rotation; // random number to set rotation degree
-
-		rotation = Random.Range (-10, 10);
-
 	}
 
 
@@ -194,7 +169,7 @@ public class LevelLoader : MonoBehaviour {
 	 * Programmer: Alex Zielinski
 	 * 
 	 * Description:
-	 * 		generate a  list of obstacles (randomly generate obstacles).
+	 * 		generate a  list of obstacles (randomly generate obstacles)
  	**********************************************************************************/
 	private void generateObstacles ()
 	{
@@ -208,27 +183,23 @@ public class LevelLoader : MonoBehaviour {
 			switch (obstacleChooser)
 			{
 			case STALACTITE:
-				obstacleList.Add (Instantiate (stalactite.gameObject) as GameObject);
-				obstacleList [i].name = "StalactiteObst";
-				//Debug.Log (stalactite.name);
+				obstacleList.Add (Instantiate (stalactite.gameObject) as GameObject); // add stalactite to obstacle list
+				obstacleList [i].name = "StalactiteObst"; // set object name
 				break;
 
 			case STALAGMITE:
-				obstacleList.Add(Instantiate(stalagmite.gameObject) as GameObject);
-				obstacleList [i].name = "StalagmiteObst";
-				//Debug.Log (stalagmite.name);
+				obstacleList.Add(Instantiate(stalagmite.gameObject) as GameObject); // add stalagmite to obstacle list
+				obstacleList [i].name = "StalagmiteObst"; // set object name
 				break; 	
 
 			case COLUMN:
-				obstacleList.Add (Instantiate (column.gameObject) as GameObject);
-				obstacleList [i].transform.localScale = new Vector3 (columnScaleX, columnScaleY, columnScaleZ);
-				obstacleList [i].transform.Rotate (0, 0, 0);
-				obstacleList [i].name = "ColumnObst";
-				//Debug.Log (column.name);
+				obstacleList.Add (Instantiate (column.gameObject) as GameObject); // add column to obstacle list
+				obstacleList [i].transform.localScale = new Vector3 (columnScaleX, columnScaleY, columnScaleZ); // set scale of column
+				obstacleList [i].name = "ColumnObst"; // set object name
 				break;
 			}
 
-			obstacleList [i].tag = "Obstacle";
+			obstacleList [i].tag = "Obstacle"; // set obstacle tag
 		}
 	}
 
@@ -241,9 +212,9 @@ public class LevelLoader : MonoBehaviour {
 	 * Programmer: Alex Zielinski
 	 * 
 	 * Description:
-	 * 		generate an array of consumables (randomly generate consumables).
+	 * 		generate an array of consumables (randomly generate consumables)
  	**********************************************************************************/
-	private void generateConsumables()
+	private void generateConsumables ()
 	{
 		int consumableChooser; // holds random integer to determine consumable
 
@@ -255,19 +226,19 @@ public class LevelLoader : MonoBehaviour {
 			switch (consumableChooser)
 			{
 			case BOOST:
-				consumableList.Add(Instantiate(consumable.gameObject) as GameObject);
-				consumableList[i].transform.GetChild(0).GetComponent<Renderer> ().material.color = Color.yellow; // set color
+				consumableList.Add(Instantiate(consumable.gameObject) as GameObject); // add boost to consumable list
+				consumableList[i].transform.GetChild(0).GetComponent<Renderer> ().material.color = Color.blue; // set color
                 consumableList[i].transform.GetChild(0).name = "boost"; // set name
                 break;
 
 			case BRAKE:
-				consumableList.Add(Instantiate(consumable.gameObject) as GameObject);
-				consumableList[i].transform.GetChild(0).GetComponent<Renderer> ().material.color = Color.cyan; // set color
+				consumableList.Add(Instantiate(consumable.gameObject) as GameObject); // add brake to consumable list
+				consumableList[i].transform.GetChild(0).GetComponent<Renderer> ().material.color = Color.red; // set color
                 consumableList[i].transform.GetChild(0).name = "brake"; // set name
                 break;
 			}
             consumableList[i].transform.GetChild(0).tag = "Consumable"; // set tag
-            consumableList[i].transform.GetChild(0).transform.localScale = new Vector3(3, 3, 3);
+            consumableList[i].transform.GetChild(0).transform.localScale = new Vector3(3, 3, 3); // set scale of consumable
         }
 	}
 
@@ -280,7 +251,7 @@ public class LevelLoader : MonoBehaviour {
 	 * Programmer: Alex Zielinski
 	 * 
 	 * Description:
-	 * 		 Randomly spawns obstacles in tunnel.
+	 * 		 Randomly spawns obstacles in tunnel
 	 **********************************************************************************/
 	private void spawnObstacles()
 	{
@@ -302,11 +273,27 @@ public class LevelLoader : MonoBehaviour {
 
 				// generate random X coord for obstacle
 				obstacleX = Random.Range (leftWallX + 1, rightWallX - 1);
+		
+				setObstacleYCoord(obstacleList[obstaclePos]); // set obstacles Y axis
 
-				// generate Y coord for obstacle
-				//obstacleY = Random.Range (bottomWallY + 1, topWallY - 1);
-				setObstacleYCoord(obstacleList[obstaclePos]);
-				setObstacleYScale(obstacleList[obstaclePos]);
+				// rotate column accordingly
+				if (obstacleList [obstaclePos].name == "ColumnObst")
+				{
+					if (obstacleX > -3 && obstacleX < 3) // if column is in the middle
+					{
+						setColumnZRotation (obstacleList [obstaclePos], 0, 360); // rotate
+					} else if (obstacleX < 0) // if obstacle is on the left side of the cave
+					{
+						setColumnZRotation (obstacleList [obstaclePos], 0, -18); // rotate
+					} else if (obstacleX > 0) // if obstacle is on the right side of the cave
+					{
+						setColumnZRotation (obstacleList [obstaclePos], 0, 18); // rotate
+					}
+				}
+				else // not a column
+				{
+					setObstacleYScale(obstacleList[obstaclePos]); // set obstacle Y scale
+				}
 
 				// position the cube
 				obstacleList[obstaclePos].transform.position = new Vector3 (obstacleX, obstacleY, obstacleZ);
@@ -329,9 +316,7 @@ public class LevelLoader : MonoBehaviour {
 	 * Programmer: Alex Zielinski
 	 * 
 	 * Description:
-	 * 		Randomly spawns consumables in tunnel. Checks if generated coordinates
-	 * 		collides with an obstacle. If so then coordinates are generated until 
-	 * 		they are valid.
+	 * 		Randomly spawns consumables in tunnel
 	 **********************************************************************************/
 	private void spawnConsumable()
 	{
@@ -373,12 +358,9 @@ public class LevelLoader : MonoBehaviour {
 						    Mathf.Abs (cnsmbleZ - obstacleList [i].transform.position.z) <= 6)
 						{
 							collides = true; // collision detected
-							//Debug.Log ("----------------HIT"); // for testing
 						}
 					}
 				} while (collides == true);
-
-				//Debug.Log ("---GOOD SPAWN"); // for testing
 
 				// randomly generate Y coordinates
 				cnsmbleY = Random.Range (bottomWallY + consumableBuffer, topWallY - consumableBuffer);
@@ -426,13 +408,13 @@ public class LevelLoader : MonoBehaviour {
 		} 
 		else // if obstacle is coloumn
 		{
-			obstacleY = bottomWallY; // set y coord bottom wall
+			obstacleY = lvlCenterY; // set y coord to center Y of tunnel
 		}
 	}
 
 
 	/**********************************************************************************
-	 * Function: void setObstacleYCoord(GameObject obstacle)
+	 * Function: void setObstacleYScale(GameObject obstacle)
 	 *						GameObject obstacle: obstacle to determine Y scale
 	 *
 	 * Date: May 14, 2017
@@ -440,18 +422,37 @@ public class LevelLoader : MonoBehaviour {
 	 * Programmer: Alex Zielinski
 	 * 
 	 * Description:
-	 * 		Based on the obstacle type passed in the Y scale of the obstacle is 
-	 * 		set accordingly
+	 * 		Sets scale of a stalactites/stalagmites obstacle
 	 **********************************************************************************/
 	private void setObstacleYScale(GameObject obstacle)
 	{
 		// randomly generate a scale value
-		float scaleY = Random.Range (obstMinScale, obstMaxScale);
+		float scale = Random.Range (obstMinScale, obstMaxScale);
 
-		// check if obstacle is NOT a column (checking for stalactite or stalagmite)
-		if (obstacle.name != "ColumnObst") // if obstacle is stalagtite
-		{
-			obstacle.transform.localScale = new Vector3 (1, scaleY, 1); // scale obstacle
-		} 
+		// scale obstacle (subtract 0.75 from X and Z axis so obstacle isn't too big
+		obstacle.transform.localScale = new Vector3 (scale - 0.75f, scale, scale - 0.75f);
+	}
+
+
+	/**********************************************************************************
+	 * Function: void setColumnZRotation(GameObject column, int min, int max)
+	 *						GameObject obstacle: obstacle to rotate
+	 *						min: minimum range for random number
+	 *						max: maximum range for random number
+	 *
+	 * Date: May 20, 2017
+	 * 
+	 * Programmer: Alex Zielinski
+	 * 
+	 * Description:
+	 * 		Rotates a column obstacle randonly on the Z axis based on the min and max
+	 * 		values passed in as parameters
+	 **********************************************************************************/
+	private void setColumnZRotation(GameObject column, int min, int max)
+	{
+		int ranDegree; // random number to set rotation degree
+		ranDegree = Random.Range (min, max); // set random degree to rotate by
+
+		column.transform.Rotate (0, 0, ranDegree); // rotate column on Z axis
 	}
 }
