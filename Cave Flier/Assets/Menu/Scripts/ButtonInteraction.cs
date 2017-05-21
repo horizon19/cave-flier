@@ -44,7 +44,8 @@ public enum buttons
     tutorial,
     levelOne,
     replayLevel,
-    goToMainMenu
+    goToMainMenu,
+    callibration
 }
 
 public class ButtonInteraction : MonoBehaviour
@@ -101,6 +102,9 @@ public class ButtonInteraction : MonoBehaviour
                     break;
                 case buttons.goToMainMenu:
                     buttonText.text = "Main Menu";
+                    break;
+                case buttons.callibration:
+                    buttonText.text = "Callibrate \nCamera";
                     break;
                 default:
                     Debug.Log("default");
@@ -203,6 +207,9 @@ public class ButtonInteraction : MonoBehaviour
                 break;
             case buttons.goToMainMenu:
                 SceneManager.LoadScene(MAIN_MENU_PATH);
+                break;
+            case buttons.callibration:
+                smScript.callibratePlayer();
                 break;
             default:
                 break;
