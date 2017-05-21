@@ -37,6 +37,7 @@ using UnityEngine.SceneManagement;
 *                   2) update the Switch statement in Start()
 *                   3) update the Switch statement in PointerDown()
 *                   4) Select the Enum in the editor for the button in the scene
+*                   5) Add the button name to the screen manager static variable list
 */
 public enum buttons
 {
@@ -47,7 +48,10 @@ public enum buttons
     goToMainMenu,
     backToMainMenu,
     nextInstruction,
-    previousInstruction
+    previousInstruction,
+    levelTwo,
+    levelThree,
+    levelFour
 }
 
 public class ButtonInteraction : MonoBehaviour
@@ -66,8 +70,12 @@ public class ButtonInteraction : MonoBehaviour
     private float leftSideOfParentPosition = -0.5f;
     private ScreenManager smScript;
     private playerMovement pmScript;
+    private TutorialManager tmScript;
 
     private const string LEVEL_ONE_PATH = "Scenes/Master/LevelOne";
+    private const string LEVEL_TWO_PATH = "Scenes/Master/LevelOne";
+    private const string LEVEL_THREE_PATH = "Scenes/Master/LevelOne";
+    private const string LEVEL_FOUR_PATH = "Scenes/Master/LevelOne";
     private const string MAIN_MENU_PATH = "Scenes/Master/mainMenu";
 
     /**
@@ -98,6 +106,15 @@ public class ButtonInteraction : MonoBehaviour
                     break;
                 case buttons.levelOne:
                     buttonText.text = "Level 1";
+                    break;
+                case buttons.levelTwo:
+                    buttonText.text = "Level 2";
+                    break;
+                case buttons.levelThree:
+                    buttonText.text = "Level 3";
+                    break;
+                case buttons.levelFour:
+                    buttonText.text = "Level 4";
                     break;
                 case buttons.replayLevel:
                     buttonText.text = "Replay";
@@ -202,33 +219,66 @@ public class ButtonInteraction : MonoBehaviour
             case buttons.levelSelect:
                 smScript.activateScreen(screens.levelSelectScreen);
                 smScript.deactivateScreen(screens.mainMenuScreen);
-
                 break;
             case buttons.levelOne:
                 SceneManager.LoadScene(LEVEL_ONE_PATH);
+                break;
+            case buttons.levelTwo:
+                SceneManager.LoadScene(LEVEL_TWO_PATH);
+                break;
+            case buttons.levelThree:
+                SceneManager.LoadScene(LEVEL_THREE_PATH);
+                break;
+            case buttons.levelFour:
+                SceneManager.LoadScene(LEVEL_FOUR_PATH);
                 break;
             case buttons.replayLevel:
                 smScript.activateScreen(screens.gameplayScreen);
                 smScript.deactivateScreen(screens.victoryScreen);
                 smScript.deactivateScreen(screens.deathScreen);
-                pmScript = (playerMovement)GameObject.FindWithTag("Player").transform.GetChild(0).gameObject.GetComponent(typeof(playerMovement));
-                pmScript.respawn();
+                if (smScript.getGameplayScreen() != null)
+                {
+                    pmScript = (playerMovement)GameObject.FindWithTag("Player").transform.GetChild(0).gameObject.GetComponent(typeof(playerMovement));
+                    pmScript.respawn();
+                }                
                 break;
             case buttons.goToMainMenu:
                 SceneManager.LoadScene(MAIN_MENU_PATH);
                 break;
             case buttons.backToMainMenu:
+                if (smScript.getTutorialScreen() != null)
+                {
+                    tmScript = (TutorialManager)GameObject.Find("Tutorial Manager").GetComponent(typeof(TutorialManager));
+                }
+                tmScript.setCurrentSlide(0);
                 smScript.activateScreen(screens.mainMenuScreen);
                 smScript.deactivateScreen(screens.tutorialScreen);
                 break;
             case buttons.nextInstruction:
-                //Need to transition text and shizzle
+                if (smScript.getTutorialScreen() != null)
+                {
+                    tmScript = (TutorialManager)GameObject.Find("Tutorial Manager").GetComponent(typeof(TutorialManager));
+                }
+                tmScript.nextSlide();
                 break;
             case buttons.previousInstruction:
-                //Need to transition text and shizzle
+                if (smScript.getTutorialScreen() != null)
+                {
+                    tmScript = (TutorialManager)GameObject.Find("Tutorial Manager").GetComponent(typeof(TutorialManager));
+                }
+                tmScript.previousSlide();
                 break;
             default:
                 break;
         }
+    }
+
+    public void setActive(bool active)
+    {
+        this.GetComponent<Collider>().enabled = active;
+        this.GetComponent<Renderer>().enabled = active;
+        this.transform.GetChild(0).GetComponent<Renderer>().enabled = active;
+        this.transform.GetChild(1).GetComponent<Renderer>().enabled = active;
+        isActive = active;
     }
 }

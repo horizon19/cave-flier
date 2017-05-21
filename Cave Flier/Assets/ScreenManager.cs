@@ -78,6 +78,9 @@ public class ScreenManager : MonoBehaviour {
     private const string TUTORIAL_BUTTON_NAME = "TutorialBtn";
     private const string LEVEL_SELECT_BUTTON_NAME = "LevelSelectBtn";
     private const string LEVEL_ONE_BUTTON_NAME = "LevelOneBtn";
+    private const string LEVEL_TWO_BUTTON_NAME = "LevelTwoBtn";
+    private const string LEVEL_THREE_BUTTON_NAME = "LevelThreeBtn";
+    private const string LEVEL_FOUR_BUTTON_NAME = "LevelFourBtn";
     private const string REPLAY_LEVEL_BUTTON_NAME = "ReplayBtn";
     private const string MAIN_MENU_BUTTON_NAME = "MainMenuBtn";
     private const string NEXT_INSTRUCTION_BUTTON_NAME = "NextInstructionBtn";
@@ -160,8 +163,8 @@ public class ScreenManager : MonoBehaviour {
             case screens.mainMenuScreen:
                 if (mainMenuScrn != null)
                 {
-                    mainMenuScrn.transform.GetChild(1).transform.Find(TUTORIAL_BUTTON_NAME).GetComponent<ButtonInteraction>().isActive = true;
-                    mainMenuScrn.transform.GetChild(1).transform.Find(LEVEL_SELECT_BUTTON_NAME).GetComponent<ButtonInteraction>().isActive = true;
+                    mainMenuScrn.transform.GetChild(1).transform.Find(TUTORIAL_BUTTON_NAME).GetComponent<ButtonInteraction>().setActive(true);
+                    mainMenuScrn.transform.GetChild(1).transform.Find(LEVEL_SELECT_BUTTON_NAME).GetComponent<ButtonInteraction>().setActive(true);
                     cameraPosition.transform.position = mainMenuScrn.transform.GetChild(2).transform.position;
                     activateVisibleLayer(MAIN_MENU_LAYER);
                 }
@@ -169,7 +172,10 @@ public class ScreenManager : MonoBehaviour {
             case screens.levelSelectScreen:
                 if (levelSelectScrn != null)
                 {
-                    levelSelectScrn.transform.GetChild(1).transform.Find(LEVEL_ONE_BUTTON_NAME).GetComponent<ButtonInteraction>().isActive = true;
+                    levelSelectScrn.transform.GetChild(1).transform.Find(LEVEL_ONE_BUTTON_NAME).GetComponent<ButtonInteraction>().setActive(true);
+                    levelSelectScrn.transform.GetChild(1).transform.Find(LEVEL_TWO_BUTTON_NAME).GetComponent<ButtonInteraction>().setActive(true);
+                    levelSelectScrn.transform.GetChild(1).transform.Find(LEVEL_THREE_BUTTON_NAME).GetComponent<ButtonInteraction>().setActive(true);
+                    levelSelectScrn.transform.GetChild(1).transform.Find(LEVEL_FOUR_BUTTON_NAME).GetComponent<ButtonInteraction>().setActive(true);
                     cameraPosition.transform.position = levelSelectScrn.transform.GetChild(2).transform.position;
                     activateVisibleLayer(LEVEL_SELECT_LAYER);
                 }
@@ -177,9 +183,8 @@ public class ScreenManager : MonoBehaviour {
             case screens.tutorialScreen:
                 if (tutorialScrn != null)
                 {
-                    tutorialScrn.transform.GetChild(1).transform.Find(NEXT_INSTRUCTION_BUTTON_NAME).GetComponent<ButtonInteraction>().isActive = true;
-                    tutorialScrn.transform.GetChild(1).transform.Find(PREVIOUS_INSTRUCTION_BUTTON_NAME).GetComponent<ButtonInteraction>().isActive = true;
-                    tutorialScrn.transform.GetChild(1).transform.Find(BACK_TO_MAIN_MENU_BUTTON_NAME).GetComponent<ButtonInteraction>().isActive = true;
+                    tutorialScrn.transform.GetChild(1).transform.Find(NEXT_INSTRUCTION_BUTTON_NAME).GetComponent<ButtonInteraction>().setActive(true);
+                    tutorialScrn.transform.GetChild(1).transform.Find(BACK_TO_MAIN_MENU_BUTTON_NAME).GetComponent<ButtonInteraction>().setActive(true);
                     cameraPosition.transform.position = tutorialScrn.transform.GetChild(2).transform.position;
                     activateVisibleLayer(TUTORIAL_LAYER);
                 }
@@ -200,12 +205,11 @@ public class ScreenManager : MonoBehaviour {
             case screens.victoryScreen:
                 if (victoryScrn != null)
                 {
-                    victoryScrn.transform.GetChild(1).transform.Find(REPLAY_LEVEL_BUTTON_NAME).GetComponent<ButtonInteraction>().isActive = true;
-                    victoryScrn.transform.GetChild(1).transform.Find(MAIN_MENU_BUTTON_NAME).GetComponent<ButtonInteraction>().isActive = true;
-
-                        pmScript = (playerMovement)GameObject.FindWithTag("Player").transform.GetChild(0).gameObject.GetComponent(typeof(playerMovement));
-                        scoreText = victoryScrn.transform.GetChild(0).transform.Find("Front Wall").transform.GetChild(0).transform.GetComponentInChildren(typeof(TextMesh)) as TextMesh;
-                        scoreText.text = "Score: " + pmScript.getFinalScore();
+                    victoryScrn.transform.GetChild(1).transform.Find(REPLAY_LEVEL_BUTTON_NAME).GetComponent<ButtonInteraction>().setActive(true);
+                    victoryScrn.transform.GetChild(1).transform.Find(MAIN_MENU_BUTTON_NAME).GetComponent<ButtonInteraction>().setActive(true);
+                    pmScript = (playerMovement)GameObject.FindWithTag("Player").transform.GetChild(0).gameObject.GetComponent(typeof(playerMovement));
+                    scoreText = victoryScrn.transform.GetChild(0).transform.Find("Front Wall").transform.GetChild(0).transform.GetComponentInChildren(typeof(TextMesh)) as TextMesh;
+                    scoreText.text = "Score: " + pmScript.getFinalScore();
 
                     //cameraPosition.transform.position = victoryScrn.transform.GetChild(2).transform.position;
                     playerModel.transform.position = victoryScrn.transform.GetChild(2).transform.position;
@@ -252,24 +256,27 @@ public class ScreenManager : MonoBehaviour {
             case screens.mainMenuScreen:
                 if (mainMenuScrn != null)
                 {
-                    mainMenuScrn.transform.GetChild(1).transform.Find(TUTORIAL_BUTTON_NAME).GetComponent<ButtonInteraction>().isActive = false;
-                    mainMenuScrn.transform.GetChild(1).transform.Find(LEVEL_SELECT_BUTTON_NAME).GetComponent<ButtonInteraction>().isActive = false;
+                    mainMenuScrn.transform.GetChild(1).transform.Find(TUTORIAL_BUTTON_NAME).GetComponent<ButtonInteraction>().setActive(false);
+                    mainMenuScrn.transform.GetChild(1).transform.Find(LEVEL_SELECT_BUTTON_NAME).GetComponent<ButtonInteraction>().setActive(false);
                     deactivateVisibleLayer(MAIN_MENU_LAYER);
                 }
                 break;
             case screens.levelSelectScreen:
                 if (levelSelectScrn != null)
                 {
-                    levelSelectScrn.transform.GetChild(1).transform.Find(LEVEL_ONE_BUTTON_NAME).GetComponent<ButtonInteraction>().isActive = false;
+                    levelSelectScrn.transform.GetChild(1).transform.Find(LEVEL_ONE_BUTTON_NAME).GetComponent<ButtonInteraction>().setActive(false);
+                    levelSelectScrn.transform.GetChild(1).transform.Find(LEVEL_TWO_BUTTON_NAME).GetComponent<ButtonInteraction>().setActive(false);
+                    levelSelectScrn.transform.GetChild(1).transform.Find(LEVEL_THREE_BUTTON_NAME).GetComponent<ButtonInteraction>().setActive(false);
+                    levelSelectScrn.transform.GetChild(1).transform.Find(LEVEL_FOUR_BUTTON_NAME).GetComponent<ButtonInteraction>().setActive(false);
                     deactivateVisibleLayer(LEVEL_SELECT_LAYER);
                 }
                 break;
             case screens.tutorialScreen:
                 if (tutorialScrn != null)
                 {
-                    tutorialScrn.transform.GetChild(1).transform.Find(NEXT_INSTRUCTION_BUTTON_NAME).GetComponent<ButtonInteraction>().isActive = false;
-                    tutorialScrn.transform.GetChild(1).transform.Find(PREVIOUS_INSTRUCTION_BUTTON_NAME).GetComponent<ButtonInteraction>().isActive = false;
-                    tutorialScrn.transform.GetChild(1).transform.Find(BACK_TO_MAIN_MENU_BUTTON_NAME).GetComponent<ButtonInteraction>().isActive = false;
+                    tutorialScrn.transform.GetChild(1).transform.Find(NEXT_INSTRUCTION_BUTTON_NAME).GetComponent<ButtonInteraction>().setActive(false);
+                    tutorialScrn.transform.GetChild(1).transform.Find(PREVIOUS_INSTRUCTION_BUTTON_NAME).GetComponent<ButtonInteraction>().setActive(false);
+                    tutorialScrn.transform.GetChild(1).transform.Find(BACK_TO_MAIN_MENU_BUTTON_NAME).GetComponent<ButtonInteraction>().setActive(false);
                     deactivateVisibleLayer(TUTORIAL_LAYER);
                 }
                 break;
@@ -287,8 +294,8 @@ public class ScreenManager : MonoBehaviour {
             case screens.victoryScreen:
                 if (victoryScrn != null)
                 {
-                    victoryScrn.transform.GetChild(1).transform.Find(REPLAY_LEVEL_BUTTON_NAME).GetComponent<ButtonInteraction>().isActive = false;
-                    victoryScrn.transform.GetChild(1).transform.Find(MAIN_MENU_BUTTON_NAME).GetComponent<ButtonInteraction>().isActive = false;
+                    victoryScrn.transform.GetChild(1).transform.Find(REPLAY_LEVEL_BUTTON_NAME).GetComponent<ButtonInteraction>().setActive(false);
+                    victoryScrn.transform.GetChild(1).transform.Find(MAIN_MENU_BUTTON_NAME).GetComponent<ButtonInteraction>().setActive(false);
                     deactivateVisibleLayer(VICTORY_LAYER);
                 }
                 break;
@@ -378,5 +385,77 @@ public class ScreenManager : MonoBehaviour {
         victoryScrn = GameObject.Find(VICTORY_SCREEN_NAME);
         deathScrn = GameObject.Find(DEATH_SCREEN_NAME);
         tutorialScrn = GameObject.Find(TUTORIAL_SCREEN_NAME);
+    }
+
+    /**
+    * Date:             May 20, 2017
+    * Author:           Jacob Frank
+    * Interface:        GameObject getMainMenuScreen()
+    * Description:
+    *                   Returns the menu screen object
+    */
+    public GameObject getMainMenuScreen()
+    {
+        return mainMenuScrn;
+    }
+
+    /**
+    * Date:             May 20, 2017
+    * Author:           Jacob Frank
+    * Interface:        GameObject getLevelSelectScreen()
+    * Description:
+    *                   Returns the level select screen object
+    */
+    public GameObject getLevelSelectScreen()
+    {
+        return levelSelectScrn;
+    }
+
+    /**
+    * Date:             May 20, 2017
+    * Author:           Jacob Frank
+    * Interface:        GameObject getGameplayScreen()
+    * Description:
+    *                   Returns the gameplay screen object
+    */
+    public GameObject getGameplayScreen()
+    {
+        return gameplayScrn;
+    }
+
+    /**
+    * Date:             May 20, 2017
+    * Author:           Jacob Frank
+    * Interface:        GameObject getVictoryScreen()
+    * Description:
+    *                   Returns the victory screen object
+    */
+    public GameObject getVictoryScreen()
+    {
+        return victoryScrn;
+    }
+
+    /**
+    * Date:             May 20, 2017
+    * Author:           Jacob Frank
+    * Interface:        GameObject getDeathScreen()
+    * Description:
+    *                   Returns the death screen object
+    */
+    public GameObject getDeathScreen()
+    {
+        return deathScrn;
+    }
+
+    /**
+    * Date:             May 20, 2017
+    * Author:           Jacob Frank
+    * Interface:        GameObject getTutorialScreen()
+    * Description:
+    *                   Returns the tutorial screen object
+    */
+    public GameObject getTutorialScreen()
+    {
+        return tutorialScrn;
     }
 }
