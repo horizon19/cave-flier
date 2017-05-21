@@ -38,11 +38,11 @@ public class collisionDetection : MonoBehaviour
     public bool debug = false; //this turns on and off the debug logs and features.
 
     /**
-* These are the private variables still visible in the editor
-* edit:
-* **I have taken control of the editor. It shows what -I- choose now. 
-* **MWAHAHAHAHAHAHA
-*/
+    * These are the private variables still visible in the editor
+    * edit:
+    * **I have taken control of the editor. It shows what -I- choose now. 
+    * **MWAHAHAHAHAHAHA
+    */
 
     public List<GameObject> collidedObjects = new List<GameObject>();
     public List<string> collidedNames = new List<string>();
@@ -72,7 +72,6 @@ public class collisionDetection : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        Debug.LogWarning("Max: " + max + "\nLayer3: " + layer3 + "\nLayer2: " + layer2 +"\nmin: " + min);
         //make sure this array is empty
         collidedObjects.Clear();
         thisPosition = this.transform.position;
@@ -105,8 +104,6 @@ public class collisionDetection : MonoBehaviour
         ray.origin = this.transform.position;
         //set it's direction
         ray.direction = this.transform.forward;
-        // literalHeadOnRange = 180 - headOnRange;
-        Debug.Log("Max: " + max + "\nLayer3: " + layer3 + "\nLayer2: " + layer2 + "\nmin: " + min);
     }
 
     /**
@@ -161,7 +158,7 @@ public class collisionDetection : MonoBehaviour
                     //if the raycast has hit (and if we're here, it has)
                     //you ded son
 
-                    pmScript.lowerHealth(pmScript.getHealth());
+                    pmScript.lowerHealth(pmScript.getHealth(), true);
                     break;
                 case "Start Volume":
                     pmScript.startTimer();
@@ -249,7 +246,7 @@ public class collisionDetection : MonoBehaviour
         //                   This is for consumables                                //
         //for each consumable we're currently colliding with, we want to check how far away the object is.
         //Depending on what threshold it falls into, we want to do specific defined behaviour 
-        for (int index = 0; index < consumedObjects.Count; index++)
+        for (int index = 0; index < consumedObjects.Count && index > 0; index++)
         {
             //first we grab the distance between us and the colliding object
             distance = Vector3.Distance(thisPosition, consumedCollisions[index]);//.transform.position);

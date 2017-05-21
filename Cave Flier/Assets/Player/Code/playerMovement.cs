@@ -60,7 +60,8 @@ public class playerMovement : MonoBehaviour
     public float speedMax;
     public float maxTurn;
     public GameObject HUDCanvas;
-
+    public Rigidbody rigidbody;
+    public GameObject gameScrnPos, victoryScrnPos, deathScrnPos;
 
     private Vector3 startPosition;
     private Vector3 startRotation;
@@ -73,6 +74,7 @@ public class playerMovement : MonoBehaviour
 	private String endObjectName = "EndVolume";
 	private float totalTime;
     private bool recordTime = false;
+    private SkinnedMeshRenderer playerRenderer;
 	
 
     [SerializeField] private float invincCounter = 0;
@@ -107,9 +109,60 @@ public class playerMovement : MonoBehaviour
             hudScript = HUDCanvas.GetComponent<HUDController>();
         }
 
+        //we will grab the Camera Position object from the Gameplay screen if we can
+        if(gameScrnPos == null)
+        {
+            Debug.LogWarning("No gameplay Camera Position Object has been added. we will try to find it");
+            gameScrnPos = GameObject.Find("Gameplay").transform.Find("Camera Position").gameObject;
+            if(gameScrnPos == null)
+            {
+                Debug.LogError("We couldn't find the Gameplay Camera Position Object!!!");
+            }
+        }
+
+        //we will grab the Camera position object from the Victory screen if we can
+        if (victoryScrnPos == null)
+        {
+            Debug.LogWarning("No victory Camera Position Object has been added. we will try to find it");
+            victoryScrnPos = GameObject.Find("Victory").transform.Find("Camera Position").gameObject;
+            if (victoryScrnPos == null)
+            {
+                Debug.LogError("We couldn't find the Victory Camera Position Object!!!");
+            }
+        }
+
+        //we will grab the camera position object from the death screen if we can
+        if (deathScrnPos == null)
+        {
+            Debug.LogWarning("No death Camera Position Object has been added. we will try to find it");
+            deathScrnPos = GameObject.Find("Death").transform.Find("Camera Position").gameObject;
+            if (deathScrnPos == null)
+            {
+                Debug.LogError("We couldn't find the death Camera Position Object!!!");
+            }
+        }
+
+        //getting ourselves a collisionDetection script
         cdScript = GameObject.Find("Collider").transform.GetChild(0).GetComponent<collisionDetection>();
+
+        //getting ourselves a screen manager script
 		smScript = (ScreenManager)GameObject.Find("Screen Manager").GetComponent(typeof(ScreenManager));
-        Rigidbody rigidbody = GetComponent<Rigidbody>();    //get the physics of the object
+        if (rigidbody == null)
+        {
+            Debug.LogWarning("We have no rigidbody. we will pull one from this object.");
+            rigidbody = GetComponent<Rigidbody>();    //get the physics of the object
+            if(rigidbody == null)
+            {
+                Debug.LogError("The attached object has no rigidbody. PANIC!");
+            }
+        }
+        //we want ot grab the player's mesh renderer for the asset Ramin 
+        playerRenderer = this.transform.Find("torso").transform.Find("PlayerRenderer").GetComponent<SkinnedMeshRenderer>();
+        if(playerRenderer == false)
+        {
+            Debug.LogError("We could not find the player renderer. PANIC!");
+        }
+
         rigidbody.freezeRotation = true;    //stop the object from rotating
         startPosition = transform.position;  //get the starting position
         startRotation = new Vector3(0, 0, 1);//transform.forward; //get the starting angle of rotation
@@ -176,7 +229,7 @@ public class playerMovement : MonoBehaviour
         switch (pState)
         {
 
-           case PlayerState.active:
+            case PlayerState.active:
                 movement(updateSpeed()); //update the player's current position
                 if (recordTime)//we only want to record while we're in the level, not approaching or victorying
                 {
@@ -193,12 +246,11 @@ public class playerMovement : MonoBehaviour
                 hudScript.updatePlayerTime(totalTime);
                 break;
             case PlayerState.dead:
-				//calcFinalScore();
                 break;
             case PlayerState.pause:
                 break;
             case PlayerState.victory:
-				
+
                 break;
         }
     }
@@ -367,25 +419,50 @@ public class playerMovement : MonoBehaviour
         switch (state)
         {
             case PlayerState.pause:
-                recordTime = false;
+                endTimer();
+
+                //make sure we can see the player
+                playerRenderer.enabled = true;
                 break;
             case PlayerState.active:
+                //make sure we can see the player
+                playerRenderer.enabled = true;
                 break;
             case PlayerState.damaged:
-				speedMax = speedMax - ((speedMax - speedMin) / playerHealth);   //assert that playerHealth is greater than 0
+				speedMax = speedMax - ((speedMax - speedMin) / playerHealth);   
                 //activate the HUD's bloodsplatter effect
                 hudScript.throwBloodSplatter(invincTimer);
+                
+                //make sure we can see the player model
+                playerRenderer.enabled = true;
                 break;
             case PlayerState.dead:
+                //set our rotation to forward
+                this.transform.rotation = deathScrnPos.transform.rotation;
+
                 smScript.activateScreen(screens.deathScreen);
                 smScript.deactivateScreen(screens.gameplayScreen);
-                recordTime = false;
+
+                //turn off the timer
+                endTimer();
+
+                //turn off the player's model so we don't see it in screen
+                playerRenderer.enabled = false;
                 break;
             case PlayerState.victory:
+                //set our rotation to forward so the player doesn't have to wildly turn around
+                this.transform.rotation = victoryScrnPos.transform.rotation;
+                //calculate the final score
                 calcFinalScore();
+                
                 smScript.activateScreen(screens.victoryScreen);
                 smScript.deactivateScreen(screens.gameplayScreen);
-                recordTime = false;
+
+                //turn off the timer
+                endTimer();
+                
+                //turn off the player's model so we don't see it in screen
+                playerRenderer.enabled = false;
                 break;
         }
 
@@ -412,10 +489,10 @@ public class playerMovement : MonoBehaviour
     * Description:
     *                   Lowers the player's health by the inputted integer, and handles if the player dies or is just damaged.
     */
-    public void lowerHealth(int damage)
+    public void lowerHealth(int damage, bool isHeadOn = false)
     {
         //check to make sure we're in a state where damage can be done
-        if (pState == PlayerState.active)
+        if (pState == PlayerState.active || isHeadOn)
         {
 			playerHealth -= damage;
 
@@ -453,6 +530,7 @@ public class playerMovement : MonoBehaviour
         transform.localEulerAngles = startRotation; //reset the player's rotation angles
         speedMax = speedLevelMax;   //reset the max potential speed
         totalTime = 0;//reset total time
+        this.transform.rotation = gameScrnPos.transform.rotation;
         setPlayerState(PlayerState.active); //reset the player to an alive state again
     }
 
