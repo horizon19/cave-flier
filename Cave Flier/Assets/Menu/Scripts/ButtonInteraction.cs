@@ -44,7 +44,10 @@ public enum buttons
     tutorial,
     levelOne,
     replayLevel,
-    goToMainMenu
+    goToMainMenu,
+    backToMainMenu,
+    nextInstruction,
+    previousInstruction
 }
 
 public class ButtonInteraction : MonoBehaviour
@@ -102,6 +105,15 @@ public class ButtonInteraction : MonoBehaviour
                 case buttons.goToMainMenu:
                     buttonText.text = "Main Menu";
                     break;
+                case buttons.backToMainMenu:
+                    buttonText.text = "Main Menu";
+                    break;
+                case buttons.nextInstruction:
+                    buttonText.text = "Next";
+                    break;
+                case buttons.previousInstruction:
+                    buttonText.text = "Previous";
+                    break;
                 default:
                     Debug.Log("default");
                     break;
@@ -149,7 +161,6 @@ public class ButtonInteraction : MonoBehaviour
     */
     public void PointerEnter ()
     {
-        Debug.Log("pointerEnter()");
         gazedAt = true;
     }
 
@@ -184,7 +195,9 @@ public class ButtonInteraction : MonoBehaviour
     {
         switch(button)
         {
-            case buttons.tutorial:           
+            case buttons.tutorial:
+                smScript.activateScreen(screens.tutorialScreen);
+                smScript.deactivateScreen(screens.mainMenuScreen);
                 break;
             case buttons.levelSelect:
                 smScript.activateScreen(screens.levelSelectScreen);
@@ -203,6 +216,16 @@ public class ButtonInteraction : MonoBehaviour
                 break;
             case buttons.goToMainMenu:
                 SceneManager.LoadScene(MAIN_MENU_PATH);
+                break;
+            case buttons.backToMainMenu:
+                smScript.activateScreen(screens.mainMenuScreen);
+                smScript.deactivateScreen(screens.tutorialScreen);
+                break;
+            case buttons.nextInstruction:
+                //Need to transition text and shizzle
+                break;
+            case buttons.previousInstruction:
+                //Need to transition text and shizzle
                 break;
             default:
                 break;

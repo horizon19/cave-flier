@@ -34,11 +34,12 @@ using UnityEngine;
 * Note:
 *                   When new screens are created:
 *                   1) Add new Enum to list.
-*                   2) Add required button, layer, and tag const values before start()
-*                   3) Update findAllScreens()
-*                   4) Update deactivateAllScreens()
-*                   5) Update activateScreen()
-*                   6) Update deactivateScreen()
+*                   2) Add private variable to store screen as GameObject
+*                   3) Add required button, layer, and tag const values before start()
+*                   4) Update activateScreen()
+*                   5) Update deactivateScreen()
+*                   6) Update deactivateAllScreens()
+*                   7) Update findAllScreens()
 */
 public enum screens
 {
@@ -46,7 +47,8 @@ public enum screens
     levelSelectScreen,
     gameplayScreen,
     victoryScreen,
-    deathScreen
+    deathScreen,
+    tutorialScreen
 }
 
 public class ScreenManager : MonoBehaviour {
@@ -56,6 +58,7 @@ public class ScreenManager : MonoBehaviour {
     private GameObject gameplayScrn;
     private GameObject victoryScrn;
     private GameObject deathScrn;
+    private GameObject tutorialScrn;
 
     private GameObject cameraPosition; //Parent object of the camera to allow for camera translation
     private Camera camera;
@@ -76,6 +79,9 @@ public class ScreenManager : MonoBehaviour {
     private const string LEVEL_ONE_BUTTON_NAME = "LevelOneBtn";
     private const string REPLAY_LEVEL_BUTTON_NAME = "ReplayBtn";
     private const string MAIN_MENU_BUTTON_NAME = "MainMenuBtn";
+    private const string NEXT_INSTRUCTION_BUTTON_NAME = "NextInstructionBtn";
+    private const string PREVIOUS_INSTRUCTION_BUTTON_NAME = "PreviousInstructionBtn";
+    private const string BACK_TO_MAIN_MENU_BUTTON_NAME = "BackToMainMenuBtn";
 
     private const string MAIN_MENU_LAYER = "Main Menu Layer";
     private const string LEVEL_SELECT_LAYER = "Level Select Layer";
@@ -83,12 +89,14 @@ public class ScreenManager : MonoBehaviour {
     private const string VICTORY_LAYER = "Victory Layer";
     private const string DEATH_LAYER = "Death Layer";
     private const string HUD_LAYER = "HUDLayer";
+    private const string TUTORIAL_LAYER = "Tutorial Layer";
 
     private const string MAIN_MENU_SCREEN_NAME = "Main Menu";
     private const string LEVEL_SELECT_SCREEN_NAME = "Level Select";
     private const string GAMEPLAY_SCREEN_NAME = "Gameplay";
     private const string VICTORY_SCREEN_NAME = "Victory";
     private const string DEATH_SCREEN_NAME = "Death";
+    private const string TUTORIAL_SCREEN_NAME = "Tutorial";
 
     public screens initialScreen; //Screen to be activated upon start (changed in Unity editor)
 
@@ -159,6 +167,16 @@ public class ScreenManager : MonoBehaviour {
                     levelSelectScrn.transform.GetChild(1).transform.Find(LEVEL_ONE_BUTTON_NAME).GetComponent<ButtonInteraction>().isActive = true;
                     cameraPosition.transform.position = levelSelectScrn.transform.GetChild(2).transform.position;
                     activateVisibleLayer(LEVEL_SELECT_LAYER);
+                }
+                break;
+            case screens.tutorialScreen:
+                if (tutorialScrn != null)
+                {
+                    tutorialScrn.transform.GetChild(1).transform.Find(NEXT_INSTRUCTION_BUTTON_NAME).GetComponent<ButtonInteraction>().isActive = true;
+                    tutorialScrn.transform.GetChild(1).transform.Find(PREVIOUS_INSTRUCTION_BUTTON_NAME).GetComponent<ButtonInteraction>().isActive = true;
+                    tutorialScrn.transform.GetChild(1).transform.Find(BACK_TO_MAIN_MENU_BUTTON_NAME).GetComponent<ButtonInteraction>().isActive = true;
+                    cameraPosition.transform.position = tutorialScrn.transform.GetChild(2).transform.position;
+                    activateVisibleLayer(TUTORIAL_LAYER);
                 }
                 break;
             case screens.gameplayScreen:
@@ -236,6 +254,15 @@ public class ScreenManager : MonoBehaviour {
                 {
                     levelSelectScrn.transform.GetChild(1).transform.Find(LEVEL_ONE_BUTTON_NAME).GetComponent<ButtonInteraction>().isActive = false;
                     deactivateVisibleLayer(LEVEL_SELECT_LAYER);
+                }
+                break;
+            case screens.tutorialScreen:
+                if (tutorialScrn != null)
+                {
+                    tutorialScrn.transform.GetChild(1).transform.Find(NEXT_INSTRUCTION_BUTTON_NAME).GetComponent<ButtonInteraction>().isActive = false;
+                    tutorialScrn.transform.GetChild(1).transform.Find(PREVIOUS_INSTRUCTION_BUTTON_NAME).GetComponent<ButtonInteraction>().isActive = false;
+                    tutorialScrn.transform.GetChild(1).transform.Find(BACK_TO_MAIN_MENU_BUTTON_NAME).GetComponent<ButtonInteraction>().isActive = false;
+                    deactivateVisibleLayer(TUTORIAL_LAYER);
                 }
                 break;
             case screens.gameplayScreen:
@@ -321,6 +348,7 @@ public class ScreenManager : MonoBehaviour {
         deactivateScreen(screens.gameplayScreen);
         deactivateScreen(screens.victoryScreen);
         deactivateScreen(screens.deathScreen);
+        deactivateScreen(screens.tutorialScreen);
     }
 
     /**
@@ -341,5 +369,6 @@ public class ScreenManager : MonoBehaviour {
         gameplayScrn = GameObject.Find(GAMEPLAY_SCREEN_NAME);
         victoryScrn = GameObject.Find(VICTORY_SCREEN_NAME);
         deathScrn = GameObject.Find(DEATH_SCREEN_NAME);
+        tutorialScrn = GameObject.Find(TUTORIAL_SCREEN_NAME);
     }
 }
