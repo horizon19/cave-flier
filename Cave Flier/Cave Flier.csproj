@@ -157,6 +157,7 @@
     <Compile Include="Assets\Player\Code\collisionDetection.cs" />
     <Compile Include="Assets\Player\Code\playerMovement.cs" />
     <Compile Include="Assets\ScreenManager.cs" />
+    <Compile Include="Assets\TutorialManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Cave\Code\deleteme.txt" />
