@@ -372,7 +372,6 @@ public class playerMovement : MonoBehaviour
                 recordTime = false;
                 break;
             case PlayerState.victory:
-                calcFinalScore();
                 smScript.activateScreen(screens.victoryScreen);
                 smScript.deactivateScreen(screens.gameplayScreen);
                 recordTime = false;
