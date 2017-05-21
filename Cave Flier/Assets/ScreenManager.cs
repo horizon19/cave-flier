@@ -58,6 +58,7 @@ public class ScreenManager : MonoBehaviour {
     private GameObject deathScrn;
 
     private GameObject cameraPosition; //Parent object of the camera to allow for camera translation
+    private GameObject player, playerModel;
     private Camera camera;
     private Camera cameraLeft; //Google VR camera's left eye camera
     private Camera cameraRight; //Google VR camera's right eye camera
@@ -89,6 +90,8 @@ public class ScreenManager : MonoBehaviour {
     private const string GAMEPLAY_SCREEN_NAME = "Gameplay";
     private const string VICTORY_SCREEN_NAME = "Victory";
     private const string DEATH_SCREEN_NAME = "Death";
+    private const string PLAYER_NAME = "Player";
+    private const string PLAYER_MODEL_NAME = "PlayerModel";
 
     public screens initialScreen; //Screen to be activated upon start (changed in Unity editor)
 
@@ -113,6 +116,8 @@ public class ScreenManager : MonoBehaviour {
         cameraPosition = GameObject.FindWithTag(MAIN_CAMERA_POSITION_TAG);
         cameraLeft = GameObject.FindWithTag(LEFT_EYE_TAG).GetComponent<Camera>();
         cameraRight = GameObject.FindWithTag(RIGHT_EYE_TAG).GetComponent<Camera>();
+        player = GameObject.FindWithTag(PLAYER_NAME);
+        playerModel = GameObject.Find(PLAYER_MODEL_NAME);
 
         deactivateAllScreens(); //Deactivates all game screens to ensure only one will be active after next call
         activateScreen(initialScreen); //Activates game screen defined by the  public variable "initialscreen" in the Unity editor.
@@ -164,8 +169,9 @@ public class ScreenManager : MonoBehaviour {
             case screens.gameplayScreen:
                 if (gameplayScrn != null)
                 {
-                    cameraPosition.transform.position = gameplayScrn.transform.GetChild(2).transform.position;
-                    cameraPosition.transform.localPosition = new Vector3(0, 0, 0.8f);
+                    //cameraPosition.transform.position = gameplayScrn.transform.GetChild(2).transform.position;
+                    playerModel.transform.position = gameplayScrn.transform.GetChild(2).transform.position;
+                    //cameraPosition.transform.localPosition = new Vector3(0, 0, 0.8f);
                     camera.transform.Find("GvrReticlePointer").GetComponent<MeshRenderer>().enabled = false;
                     HudCamera = GameObject.FindWithTag(HUD_CAMERA_TAG).GetComponent<Camera>();
                     HudCamera.enabled = true;
@@ -183,14 +189,16 @@ public class ScreenManager : MonoBehaviour {
                         scoreText = victoryScrn.transform.GetChild(0).transform.Find("Front Wall").transform.GetChild(0).transform.GetComponentInChildren(typeof(TextMesh)) as TextMesh;
                         scoreText.text = "Score: " + pmScript.getFinalScore();
 
-                    cameraPosition.transform.position = victoryScrn.transform.GetChild(2).transform.position;
+                    //cameraPosition.transform.position = victoryScrn.transform.GetChild(2).transform.position;
+                    playerModel.transform.position = victoryScrn.transform.GetChild(2).transform.position;
                     activateVisibleLayer(VICTORY_LAYER);
                 }
                 break;
             case screens.deathScreen:
                 if (deathScrn != null)
                 {
-                    cameraPosition.transform.position = deathScrn.transform.GetChild(2).transform.position;
+                    //cameraPosition.transform.position = deathScrn.transform.GetChild(2).transform.position;
+                    playerModel.transform.position = deathScrn.transform.GetChild(2).transform.position;
                     activateVisibleLayer(DEATH_LAYER);
                 }
                 break;
