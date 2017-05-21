@@ -423,16 +423,20 @@ public class playerMovement : MonoBehaviour
 
                 //make sure we can see the player
                 playerRenderer.enabled = true;
+
+                //freeze rigidbody movement
+                rigidbody.isKinematic = true;
                 break;
             case PlayerState.active:
                 //make sure we can see the player
                 playerRenderer.enabled = true;
+                rigidbody.isKinematic = false;
                 break;
             case PlayerState.damaged:
 				speedMax = speedMax - ((speedMax - speedMin) / playerHealth);   
                 //activate the HUD's bloodsplatter effect
                 hudScript.throwBloodSplatter(invincTimer);
-                
+                rigidbody.isKinematic = false;
                 //make sure we can see the player model
                 playerRenderer.enabled = true;
                 break;
@@ -445,6 +449,8 @@ public class playerMovement : MonoBehaviour
 
                 //turn off the timer
                 endTimer();
+
+                rigidbody.isKinematic = true;
 
                 //turn off the player's model so we don't see it in screen
                 playerRenderer.enabled = false;
@@ -460,7 +466,9 @@ public class playerMovement : MonoBehaviour
 
                 //turn off the timer
                 endTimer();
-                
+
+                rigidbody.isKinematic = true;
+
                 //turn off the player's model so we don't see it in screen
                 playerRenderer.enabled = false;
                 break;
