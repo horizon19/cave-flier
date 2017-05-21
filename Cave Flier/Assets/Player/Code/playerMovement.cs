@@ -53,7 +53,7 @@ public class playerMovement : MonoBehaviour
     public int playerHealth;
     public int invincTimer = 5;
     public int playerPoints = 0;
-	public float finalScore;
+	public int finalScore = 0;
     public float currentSpeed;
     public float speedLevelMax = 17;
     public float speedMin = 10;
@@ -185,6 +185,8 @@ public class playerMovement : MonoBehaviour
     */
     public void Update()
     {
+        getFinalScore();
+
         //this switch statement determines the actions the player will take during the update function
         switch (pState)
         {
@@ -250,27 +252,9 @@ public class playerMovement : MonoBehaviour
             case PlayerState.pause:
                 break;
             case PlayerState.victory:
-
                 break;
         }
     }
-	
-	/**
-    * Date:             May 18, 2017
-    * Author:           Aing Ragunathan
-    * Interface:        void calcFinalScore ()
-    * Description:
-    *                   Updates the final score
-    */
-	public void calcFinalScore()
-	{
-        if(totalTime == 0)
-        {
-            totalTime = levelDistance;
-        }
-
-		finalScore = playerPoints * (levelDistance / totalTime) ;
-	}
 	
     /**
     * Date:             May 12, 2017
@@ -356,6 +340,13 @@ public class playerMovement : MonoBehaviour
 		//transform.Translate(0, Input.acceleration.z * 0.5f, 0);  //makes up and down turning feel more natural
         transform.Translate(0, Input.acceleration.z * xRotationSpeed, 0);  //makes up and down turning feel more natural
 		//transform.Rotate(new Vector3(1, 0, 0), -Input.acceleration.z * xRotationSpeed); //rotate the player when moving up or down               
+    }
+
+
+    public void bounce()
+    {
+        transform.Translate(new Vector3(0, 1, 0) * -Input.acceleration.z * 20);  //makes up and down turning feel more natural
+        transform.Rotate(new Vector3(0, 1, 0), -Input.acceleration.x * 20);  //rotate the player when moving from side to side             
     }
 
     /**
@@ -458,9 +449,7 @@ public class playerMovement : MonoBehaviour
             case PlayerState.victory:
                 //set our rotation to forward so the player doesn't have to wildly turn around
                 this.transform.rotation = victoryScrnPos.transform.rotation;
-                //calculate the final score
-                calcFinalScore();
-                
+
                 smScript.activateScreen(screens.victoryScreen);
                 smScript.deactivateScreen(screens.gameplayScreen);
 
@@ -540,6 +529,7 @@ public class playerMovement : MonoBehaviour
         totalTime = 0;//reset total time
         this.transform.rotation = gameScrnPos.transform.rotation;
         setPlayerState(PlayerState.active); //reset the player to an alive state again
+        totalTime = 0;
     }
 
     /**
@@ -579,6 +569,7 @@ public class playerMovement : MonoBehaviour
     public int getPoints()
     {
         return playerPoints;
+        //return finalScore;
     }
 	
 	/**
@@ -599,10 +590,21 @@ public class playerMovement : MonoBehaviour
     * Interface:        float getFinalScore()
     * Description:
     *                   Returns the final score
+    * Revision:         Aing Ragunathan (May 20, 2017) - 
     */
-	public float getFinalScore()
+	public int getFinalScore()
 	{
-		return finalScore;
+        if ((int) totalTime != 0)
+        {
+            finalScore = playerPoints * ((int)levelDistance / (int) totalTime);
+            //return finalScore;
+        }
+        else {
+            finalScore = -1;
+        }
+
+
+        return finalScore;
 	}
 
     /**
