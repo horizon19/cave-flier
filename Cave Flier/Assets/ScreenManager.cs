@@ -87,6 +87,7 @@ public class ScreenManager : MonoBehaviour {
     private const string NEXT_INSTRUCTION_BUTTON_NAME = "NextInstructionBtn";
     private const string PREVIOUS_INSTRUCTION_BUTTON_NAME = "PreviousInstructionBtn";
     private const string BACK_TO_MAIN_MENU_BUTTON_NAME = "BackToMainMenuBtn";
+    private const string CALIBRATE_CAMERA_BUTTON_NAME = "CalibrateCameraBtn";
 
     private const string MAIN_MENU_LAYER = "Main Menu Layer";
     private const string LEVEL_SELECT_LAYER = "Level Select Layer";
@@ -165,6 +166,7 @@ public class ScreenManager : MonoBehaviour {
             case screens.mainMenuScreen:
                 if (mainMenuScrn != null)
                 {
+                    mainMenuScrn.transform.GetChild(1).transform.Find(CALIBRATE_CAMERA_BUTTON_NAME).GetComponent<ButtonInteraction>().setActive(true);
                     mainMenuScrn.transform.GetChild(1).transform.Find(TUTORIAL_BUTTON_NAME).GetComponent<ButtonInteraction>().setActive(true);
                     mainMenuScrn.transform.GetChild(1).transform.Find(LEVEL_SELECT_BUTTON_NAME).GetComponent<ButtonInteraction>().setActive(true);
                     cameraPosition.transform.position = mainMenuScrn.transform.GetChild(2).transform.position;
@@ -174,6 +176,7 @@ public class ScreenManager : MonoBehaviour {
             case screens.levelSelectScreen:
                 if (levelSelectScrn != null)
                 {
+                    levelSelectScrn.transform.GetChild(1).transform.Find(CALIBRATE_CAMERA_BUTTON_NAME).GetComponent<ButtonInteraction>().setActive(true);
                     levelSelectScrn.transform.GetChild(1).transform.Find(LEVEL_ONE_BUTTON_NAME).GetComponent<ButtonInteraction>().setActive(true);
                     levelSelectScrn.transform.GetChild(1).transform.Find(LEVEL_TWO_BUTTON_NAME).GetComponent<ButtonInteraction>().setActive(true);
                     levelSelectScrn.transform.GetChild(1).transform.Find(LEVEL_THREE_BUTTON_NAME).GetComponent<ButtonInteraction>().setActive(true);
@@ -185,6 +188,7 @@ public class ScreenManager : MonoBehaviour {
             case screens.tutorialScreen:
                 if (tutorialScrn != null)
                 {
+                    tutorialScrn.transform.GetChild(1).transform.Find(CALIBRATE_CAMERA_BUTTON_NAME).GetComponent<ButtonInteraction>().setActive(true);
                     tutorialScrn.transform.GetChild(1).transform.Find(NEXT_INSTRUCTION_BUTTON_NAME).GetComponent<ButtonInteraction>().setActive(true);
                     tutorialScrn.transform.GetChild(1).transform.Find(BACK_TO_MAIN_MENU_BUTTON_NAME).GetComponent<ButtonInteraction>().setActive(true);
                     cameraPosition.transform.position = tutorialScrn.transform.GetChild(2).transform.position;
@@ -196,8 +200,7 @@ public class ScreenManager : MonoBehaviour {
                 {
                     //cameraPosition.transform.position = gameplayScrn.transform.GetChild(2).transform.position;
                     playerModel.transform.position = gameplayScrn.transform.GetChild(2).transform.position;
-                    //cameraPosition.transform.localPosition = new Vector3(0, 0, 0.8f);
-                    camera.transform.Find("GvrReticlePointer").GetComponent<MeshRenderer>().enabled = false;
+                    camera.transform.Find("GvrReticlePointer").GetComponent<MeshRenderer>().enabled = false; //Disable teh reticle during gameplay
                     HudCamera = GameObject.FindWithTag(HUD_CAMERA_TAG).GetComponent<Camera>();
                     HudCamera.enabled = true;
                     activateVisibleLayer(GAMEPLAY_LAYER);
@@ -207,6 +210,7 @@ public class ScreenManager : MonoBehaviour {
             case screens.victoryScreen:
                 if (victoryScrn != null)
                 {
+                    victoryScrn.transform.GetChild(1).transform.Find(CALIBRATE_CAMERA_BUTTON_NAME).GetComponent<ButtonInteraction>().setActive(true);
                     victoryScrn.transform.GetChild(1).transform.Find(REPLAY_LEVEL_BUTTON_NAME).GetComponent<ButtonInteraction>().setActive(true);
                     victoryScrn.transform.GetChild(1).transform.Find(MAIN_MENU_BUTTON_NAME).GetComponent<ButtonInteraction>().setActive(true);
                     pmScript = (playerMovement)GameObject.FindWithTag("Player").transform.GetChild(0).gameObject.GetComponent(typeof(playerMovement));
@@ -221,7 +225,9 @@ public class ScreenManager : MonoBehaviour {
             case screens.deathScreen:
                 if (deathScrn != null)
                 {
-                    //cameraPosition.transform.position = deathScrn.transform.GetChild(2).transform.position;
+                    deathScrn.transform.GetChild(1).transform.Find(CALIBRATE_CAMERA_BUTTON_NAME).GetComponent<ButtonInteraction>().setActive(true);
+                    deathScrn.transform.GetChild(1).transform.Find(REPLAY_LEVEL_BUTTON_NAME).GetComponent<ButtonInteraction>().setActive(true);
+                    deathScrn.transform.GetChild(1).transform.Find(MAIN_MENU_BUTTON_NAME).GetComponent<ButtonInteraction>().setActive(true);
                     playerModel.transform.position = deathScrn.transform.GetChild(2).transform.position;
                     activateVisibleLayer(DEATH_LAYER);
                 }
@@ -258,6 +264,7 @@ public class ScreenManager : MonoBehaviour {
             case screens.mainMenuScreen:
                 if (mainMenuScrn != null)
                 {
+                    mainMenuScrn.transform.GetChild(1).transform.Find(CALIBRATE_CAMERA_BUTTON_NAME).GetComponent<ButtonInteraction>().setActive(false);
                     mainMenuScrn.transform.GetChild(1).transform.Find(TUTORIAL_BUTTON_NAME).GetComponent<ButtonInteraction>().setActive(false);
                     mainMenuScrn.transform.GetChild(1).transform.Find(LEVEL_SELECT_BUTTON_NAME).GetComponent<ButtonInteraction>().setActive(false);
                     deactivateVisibleLayer(MAIN_MENU_LAYER);
@@ -266,6 +273,7 @@ public class ScreenManager : MonoBehaviour {
             case screens.levelSelectScreen:
                 if (levelSelectScrn != null)
                 {
+                    levelSelectScrn.transform.GetChild(1).transform.Find(CALIBRATE_CAMERA_BUTTON_NAME).GetComponent<ButtonInteraction>().setActive(false);
                     levelSelectScrn.transform.GetChild(1).transform.Find(LEVEL_ONE_BUTTON_NAME).GetComponent<ButtonInteraction>().setActive(false);
                     levelSelectScrn.transform.GetChild(1).transform.Find(LEVEL_TWO_BUTTON_NAME).GetComponent<ButtonInteraction>().setActive(false);
                     levelSelectScrn.transform.GetChild(1).transform.Find(LEVEL_THREE_BUTTON_NAME).GetComponent<ButtonInteraction>().setActive(false);
@@ -276,6 +284,7 @@ public class ScreenManager : MonoBehaviour {
             case screens.tutorialScreen:
                 if (tutorialScrn != null)
                 {
+                    tutorialScrn.transform.GetChild(1).transform.Find(CALIBRATE_CAMERA_BUTTON_NAME).GetComponent<ButtonInteraction>().setActive(false);
                     tutorialScrn.transform.GetChild(1).transform.Find(NEXT_INSTRUCTION_BUTTON_NAME).GetComponent<ButtonInteraction>().setActive(false);
                     tutorialScrn.transform.GetChild(1).transform.Find(PREVIOUS_INSTRUCTION_BUTTON_NAME).GetComponent<ButtonInteraction>().setActive(false);
                     tutorialScrn.transform.GetChild(1).transform.Find(BACK_TO_MAIN_MENU_BUTTON_NAME).GetComponent<ButtonInteraction>().setActive(false);
@@ -296,6 +305,7 @@ public class ScreenManager : MonoBehaviour {
             case screens.victoryScreen:
                 if (victoryScrn != null)
                 {
+                    victoryScrn.transform.GetChild(1).transform.Find(CALIBRATE_CAMERA_BUTTON_NAME).GetComponent<ButtonInteraction>().setActive(false);
                     victoryScrn.transform.GetChild(1).transform.Find(REPLAY_LEVEL_BUTTON_NAME).GetComponent<ButtonInteraction>().setActive(false);
                     victoryScrn.transform.GetChild(1).transform.Find(MAIN_MENU_BUTTON_NAME).GetComponent<ButtonInteraction>().setActive(false);
                     deactivateVisibleLayer(VICTORY_LAYER);
@@ -304,6 +314,9 @@ public class ScreenManager : MonoBehaviour {
             case screens.deathScreen:
                 if (deathScrn != null)
                 {
+                    deathScrn.transform.GetChild(1).transform.Find(CALIBRATE_CAMERA_BUTTON_NAME).GetComponent<ButtonInteraction>().setActive(false);
+                    deathScrn.transform.GetChild(1).transform.Find(REPLAY_LEVEL_BUTTON_NAME).GetComponent<ButtonInteraction>().setActive(false);
+                    deathScrn.transform.GetChild(1).transform.Find(MAIN_MENU_BUTTON_NAME).GetComponent<ButtonInteraction>().setActive(false);
                     deactivateVisibleLayer(DEATH_LAYER);
                 }
                 break;
