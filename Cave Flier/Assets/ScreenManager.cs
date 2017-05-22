@@ -68,6 +68,7 @@ public class ScreenManager : MonoBehaviour {
     private Camera HudCamera;
     private TextMesh scoreText;
     private playerMovement pmScript;
+    private GvrViewer gvrView;
 
     private const string MAIN_CAMERA_TAG = "MainCamera";
     private const string MAIN_CAMERA_POSITION_TAG = "MainCameraPos";
@@ -129,6 +130,7 @@ public class ScreenManager : MonoBehaviour {
         cameraRight = GameObject.FindWithTag(RIGHT_EYE_TAG).GetComponent<Camera>();
         player = GameObject.FindWithTag(PLAYER_NAME);
         playerModel = GameObject.Find(PLAYER_MODEL_NAME);
+        gvrView = GameObject.FindWithTag("GVRViewer").GetComponent<GvrViewer>();
 
         deactivateAllScreens(); //Deactivates all game screens to ensure only one will be active after next call
         activateScreen(initialScreen); //Activates game screen defined by the  public variable "initialscreen" in the Unity editor.
@@ -457,5 +459,18 @@ public class ScreenManager : MonoBehaviour {
     public GameObject getTutorialScreen()
     {
         return tutorialScrn;
+    }
+
+
+    /**
+    * Date:             May 21, 2017
+    * Author:           Jay Coughlan
+    * Interface:        void callibratePlayer()
+    * Description:
+    *                   Allows the user to callibrate their views.
+    */
+    public void callibratePlayer()
+    {
+        gvrView.Recenter();
     }
 }

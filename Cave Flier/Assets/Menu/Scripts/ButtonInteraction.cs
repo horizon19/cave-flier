@@ -51,7 +51,8 @@ public enum buttons
     previousInstruction,
     levelTwo,
     levelThree,
-    levelFour
+    levelFour,
+    callibration
 }
 
 public class ButtonInteraction : MonoBehaviour
@@ -121,6 +122,9 @@ public class ButtonInteraction : MonoBehaviour
                     break;
                 case buttons.goToMainMenu:
                     buttonText.text = "Main Menu";
+                    break;
+                case buttons.callibration:
+                    buttonText.text = "Callibrate \nCamera";
                     break;
                 case buttons.backToMainMenu:
                     buttonText.text = "Main Menu";
@@ -244,6 +248,9 @@ public class ButtonInteraction : MonoBehaviour
                 break;
             case buttons.goToMainMenu:
                 SceneManager.LoadScene(MAIN_MENU_PATH);
+                break;
+            case buttons.callibration:
+                smScript.callibratePlayer();
                 break;
             case buttons.backToMainMenu:
                 if (smScript.getTutorialScreen() != null)
