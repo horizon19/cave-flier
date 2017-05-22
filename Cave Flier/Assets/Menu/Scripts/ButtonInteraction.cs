@@ -74,9 +74,9 @@ public class ButtonInteraction : MonoBehaviour
     private TutorialManager tmScript;
 
     private const string LEVEL_ONE_PATH = "Scenes/Master/LevelOne";
-    private const string LEVEL_TWO_PATH = "Scenes/Master/LevelOne";
-    private const string LEVEL_THREE_PATH = "Scenes/Master/LevelOne";
-    private const string LEVEL_FOUR_PATH = "Scenes/Master/LevelOne";
+    private const string LEVEL_TWO_PATH = "Scenes/Master/LevelTwo";
+    private const string LEVEL_THREE_PATH = "Scenes/Master/LevelThree";
+    private const string LEVEL_FOUR_PATH = "Scenes/Master/LevelFour";
     private const string MAIN_MENU_PATH = "Scenes/Master/mainMenu";
 
     /**
@@ -124,7 +124,7 @@ public class ButtonInteraction : MonoBehaviour
                     buttonText.text = "Main Menu";
                     break;
                 case buttons.callibration:
-                    buttonText.text = "Callibrate \nCamera";
+                    buttonText.text = "Callibrate\nCamera";
                     break;
                 case buttons.backToMainMenu:
                     buttonText.text = "Main Menu";
