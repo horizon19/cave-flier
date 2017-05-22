@@ -360,7 +360,30 @@ public class collisionDetection : MonoBehaviour
             case "Entrance":
             //we want entrance to fall through to obstacles because the behavior is the same.
             case "Walls":
-            //we want walls to fall through to obstacles because the behavior is precisely the same.
+                //we want walls to fall through to obstacles because the behavior is precisely the same.
+                /*
+                pmScript.bounce();
+                if (debug)
+                {
+                    Debug.Log("Hit obstacle " + go.name + " at " + go.transform.position + "; distance: " + Vector3.Distance(thisPosition, go.transform.position) +
+                    " angle: " + calcCollisionAngle(other.ClosestPoint(thisPosition)));
+                }
+
+                //now we add the GO to the list
+                if (!collidedObjects.Contains(go)) //we make sure we're not somehow adding a duplicate object to the list.
+                {
+                    collidedObjects.Add(go);
+                    //we're adding it's distance here, and then referencing the object's index in it's own list to remove these distances later.
+                    collidedMinDistances.Add(Vector3.Distance(thisPosition, go.transform.position));
+                    //we add the closest point here
+                    collisions.Add(other.ClosestPoint(thisPosition));
+                    //and now the angle
+                    collisionAngles.Add(calcCollisionAngle(other.ClosestPoint(thisPosition)));
+                    //for testing, we're adding the object's name
+                    //collidedNames.Add(go.name); No longer required
+                }
+                break;
+                */
             case "Obstacle":
 
                 if (debug)
@@ -467,6 +490,8 @@ public class collisionDetection : MonoBehaviour
                     //now we remove the object from the list
                     collidedObjects.Remove(go);
                 }
+
+                //pmScript.bounce();
                 break;
             case "Obstacle":
                 if (collidedObjects.Contains(go))//we want to make sure this object wasn't, by some miracle, removed from the list prematurely

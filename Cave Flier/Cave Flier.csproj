@@ -82,7 +82,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Cave\Obstacles\Code\LevelLoader.cs" />
-    <Compile Include="Assets\GameMaster\Code\gameManager.cs" />
     <Compile Include="Assets\GoogleVR\Legacy\Scripts\GvrHead.cs" />
     <Compile Include="Assets\GoogleVR\Legacy\Scripts\Internal\GvrCameraUtils.cs" />
     <Compile Include="Assets\GoogleVR\Legacy\Scripts\Internal\GvrEye.cs" />
@@ -157,6 +156,7 @@
     <Compile Include="Assets\Player\Code\collisionDetection.cs" />
     <Compile Include="Assets\Player\Code\playerMovement.cs" />
     <Compile Include="Assets\ScreenManager.cs" />
+    <Compile Include="Assets\TutorialManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Cave\Code\deleteme.txt" />
