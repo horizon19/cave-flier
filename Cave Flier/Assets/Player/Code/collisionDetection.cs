@@ -72,6 +72,8 @@ public class collisionDetection : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+
+
         //make sure this array is empty
         collidedObjects.Clear();
         thisPosition = this.transform.position;
@@ -246,10 +248,11 @@ public class collisionDetection : MonoBehaviour
         //                   This is for consumables                                //
         //for each consumable we're currently colliding with, we want to check how far away the object is.
         //Depending on what threshold it falls into, we want to do specific defined behaviour 
-        for (int index = 0; index < consumedObjects.Count && index > 0; index++)
+        for (int index = 0; index < consumedObjects.Count && index >= 0; index++)
         {
             //first we grab the distance between us and the colliding object
             distance = Vector3.Distance(thisPosition, consumedCollisions[index]);//.transform.position);
+            consumedDistances[index] = distance;
 
             //this is the minimum distance, and will be used to determine the result on OnTriggerExit()
             /* if (distance < collidedMinDistances[index])

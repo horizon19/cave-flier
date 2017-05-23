@@ -58,10 +58,12 @@ public class playerMovement : MonoBehaviour
     public float speedLevelMax = 17;
     public float speedMin = 10;
     public float speedMax;
+    public float consumableSpeed = 1;
     public float maxTurn;
     public GameObject HUDCanvas;
     public Rigidbody rigidbody;
     public GameObject gameScrnPos, victoryScrnPos, deathScrnPos;
+    
 
     private Vector3 startPosition;
     private Vector3 startRotation;
@@ -294,7 +296,6 @@ public class playerMovement : MonoBehaviour
         }
         //restriction for turning up
         else if (deltaCrossProduct.x > 0 && Input.acceleration.z < 0)
-
         {
             moveY();
         }
@@ -319,6 +320,12 @@ public class playerMovement : MonoBehaviour
         float movement = Input.acceleration.x;
         float yRotationSpeed = currentSpeed / 4;
 		float deadZone = 0.02f;
+        float rotationSpeedMax = 40;
+        
+        if (currentSpeed > 50)
+        {
+            yRotationSpeed = rotationSpeedMax / 4;
+        }
 
         if (movement > deadZone || movement < -deadZone)
         {
@@ -335,8 +342,11 @@ public class playerMovement : MonoBehaviour
     */
     public void moveY()
     {
-        float xRotationSpeed = currentSpeed / 25;
-		
+        float xRotationSpeed = currentSpeed/25; 
+        if (currentSpeed > 50)
+        {
+            xRotationSpeed = 50 / 25;
+        }
 		//transform.Translate(0, Input.acceleration.z * 0.5f, 0);  //makes up and down turning feel more natural
         transform.Translate(0, Input.acceleration.z * xRotationSpeed, 0);  //makes up and down turning feel more natural
 		//transform.Rotate(new Vector3(1, 0, 0), -Input.acceleration.z * xRotationSpeed); //rotate the player when moving up or down               
@@ -383,11 +393,20 @@ public class playerMovement : MonoBehaviour
         switch (consumable.name)
         {
             case "boost":
-				speedMax = speedMax - ((speedMax - speedMin) / playerHealth);   //assert that playerHealth is greater than 0
+                speedMax += consumableSpeed;
+                //speedMax = speedMax - ((speedMax - speedMin) / playerHealth);   //assert that playerHealth is greater than 0
                 Debug.Log("boost");
                 break;
             case "brake":
-				speedMax = speedMax - ((speedMax - speedMin) / playerHealth);   //assert that playerHealth is greater than 0
+                if (speedMax > speedMin)
+                {
+                    speedMax -= consumableSpeed;
+                }
+                else
+                {
+                    speedMax = speedMin;
+                }
+                //- ((speedMax - speedMin) / playerHealth);   //assert that playerHealth is greater than 0
                 Debug.Log("brake");
                 break;
         }
